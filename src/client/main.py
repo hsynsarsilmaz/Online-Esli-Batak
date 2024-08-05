@@ -6,7 +6,7 @@ import json
 
 from ..common.networking import * 
 
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1366, 768
 FPS = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -26,7 +26,7 @@ async def handleIncomingMessages(websocket : websockets.WebSocketClientProtocol)
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Client")
+pygame.display.set_caption("Online Eşli Batak")
 clock = pygame.time.Clock()
 
 async def main():
