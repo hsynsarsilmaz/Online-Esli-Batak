@@ -4,20 +4,17 @@ import websockets
 import json
 import random
 
-
 from ..common.networking import * 
 from ..common.card import * 
 
-WIDTH, HEIGHT = 1366, 768
+WIDTH, HEIGHT = 1600, 900
 FPS = 60
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+CARD_WIDTH, CARD_HEIGHT = 125, 182
 
-
-color = WHITE
+color = (0, 100, 0)
 cards = []
-
-
+cardReverseVertical = None
+cardReverseHorizontal = None
 
 async def handleIncomingMessages(websocket : websockets.WebSocketClientProtocol):
     global color
@@ -29,32 +26,67 @@ async def handleIncomingMessages(websocket : websockets.WebSocketClientProtocol)
             await asyncio.sleep(5)
             await websocket.send(message)
             print(f"Sent message to server: {message}")
-            color = BLACK
 
-def loadCards():
+def loadCardReverseImages():
+    global cardReverseVertical, cardReverseHorizontal
+    cardReverseVertical = pygame.image.load("res/img/cards/RV.png").convert_alpha()
+    cardReverseVertical = pygame.transform.scale(cardReverseVertical, (CARD_WIDTH, CARD_HEIGHT))
+    cardReverseHorizontal = pygame.image.load("res/img/cards/RV.png").convert_alpha()
+    cardReverseHorizontal = pygame.transform.scale(cardReverseHorizontal, (CARD_WIDTH, CARD_HEIGHT))
+    cardReverseHorizontal = pygame.transform.rotate(cardReverseHorizontal, 90)
+
+def loadCardImages():
     global cards
     suits = ["H", "S", "D", "C"]
-    ranks = [str(n) for n in range(2, 14)]
+    ranks = [int(n) for n in range(2, 15)]
     for suit in suits:
         for rank in ranks:
-             image = pygame.image.load(f"../../res/img/cards/{rank}{suit}.png").convert_alpha()
+             image = pygame.image.load(f"res/img/cards/{rank}{suit}.png").convert_alpha()
+             image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
              cards.append(card(suit, rank,image))
     random.shuffle(cards)
-    for i in range(1,4):
-        for j in range(13):
-            cards[j].player = i
 
-             
+def dealCards():
+     for i in range(4):
+        for j in range(13):
+            c = cards[j + i*13]
+            if(i == 0):
+                c.xPos = 317 + j * 70
+                c.yPos = 668
+                c.reverse = cardReverseVertical
+                c.visible = True
+            elif(i == 1):
+                c.xPos = 68 
+                c.yPos = 88  + j * 50
+                c.reverse = cardReverseHorizontal
+            elif(i == 2):
+                c.xPos = 317 + j * 70
+                c.yPos = 50
+                c.reverse = cardReverseVertical
+            elif(i == 3):
+                c.xPos = 1350 
+                c.yPos = 88  + j * 50
+                c.reverse = cardReverseHorizontal 
+
+
+def loadCards():
+    loadCardReverseImages()
+    loadCardImages()
+    dealCards()
+
+   
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Online Eşli Batak")
 clock = pygame.time.Clock()
+loadCards()
 
 async def main():
-    async with websockets.connect(URI) as websocket:
+    
+    # async with websockets.connect(URI) as websocket:
 
-        message_handler = asyncio.create_task(handleIncomingMessages(websocket))
+        # message_handler = asyncio.create_task(handleIncomingMessages(websocket))
 
         while True:
             for event in pygame.event.get():
@@ -62,12 +94,21 @@ async def main():
                     return
 
             screen.fill(color)
-            pygame.display.flip()
+            
             clock.tick(FPS)
+
+            #draw cards
+            for card in cards:
+                if card.visible:
+                    screen.blit(card.image, (card.xPos, card.yPos))
+                else:
+                    screen.blit(card.reverse, (card.xPos, card.yPos))
+
+            pygame.display.flip()
 
             await asyncio.sleep(0)
 
-        await websocket.close()
+        # await websocket.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
