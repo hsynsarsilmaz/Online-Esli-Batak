@@ -4,7 +4,7 @@ import json
 
 from ..common.networking import * 
 
-async def handle_client(websocket: websockets.WebSocketServerProtocol, path: str):
+async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str):
     message = json.dumps({"Test": "Hello, client!"})
     await websocket.send(message)
     print("Sent message to client:", message)
@@ -12,7 +12,7 @@ async def handle_client(websocket: websockets.WebSocketServerProtocol, path: str
     print("Received from client:", data)
 
 async def main():
-    async with websockets.serve(handle_client, IP, PORT):
+    async with websockets.serve(handleClient, IP, PORT):
         print(f"Server started on ws://{IP}:{PORT}")
         await asyncio.Future() 
 
