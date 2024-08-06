@@ -11,21 +11,21 @@ WIDTH, HEIGHT = 1600, 900
 FPS = 60
 CARD_WIDTH, CARD_HEIGHT = 125, 182
 
-color = (0, 100, 0)
+color = (2, 100, 42)
 cards = []
 cardReverseVertical = None
 cardReverseHorizontal = None
 
-async def handleIncomingMessages(websocket : websockets.WebSocketClientProtocol):
-    global color
+async def handleServerConnection(websocket : websockets.WebSocketClientProtocol):
+    sendRequest(websocket, {"Type" : ReqType.CONNECT.value,"Data" : None})
+
     async for message in websocket:
         data = json.loads(message)
         if(data["Test"] == "Hello, client!"):
             print(f"Received from server: {data}")
-            message = json.dumps({"Test": "Hello, server!"})
-            await asyncio.sleep(5)
-            await websocket.send(message)
-            print(f"Sent message to server: {message}")
+
+async def sendRequest(websocket : websockets.WebSocketClientProtocol, request : dict):
+    await websocket.send(json.dumps(request))
 
 def loadCardReverseImages():
     global cardReverseVertical, cardReverseHorizontal
@@ -43,7 +43,7 @@ def loadCardImages():
         for rank in ranks:
              image = pygame.image.load(f"res/img/cards/{rank}{suit}.png").convert_alpha()
              image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
-             cards.append(card(suit, rank,image))
+             cards.append(Card(suit, rank,image))
     random.shuffle(cards)
 
 def dealCards():
@@ -84,9 +84,9 @@ loadCards()
 
 async def main():
     
-    # async with websockets.connect(URI) as websocket:
+    async with websockets.connect(URI) as websocket:
 
-        # message_handler = asyncio.create_task(handleIncomingMessages(websocket))
+        message_handler = asyncio.create_task(handleServerConnection(websocket))
 
         while True:
             for event in pygame.event.get():
@@ -97,7 +97,6 @@ async def main():
             
             clock.tick(FPS)
 
-            #draw cards
             for card in cards:
                 if card.visible:
                     screen.blit(card.image, (card.xPos, card.yPos))
