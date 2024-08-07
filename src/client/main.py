@@ -17,15 +17,10 @@ cardReverseVertical = None
 cardReverseHorizontal = None
 
 async def handleServerConnection(websocket : websockets.WebSocketClientProtocol):
-    sendRequest(websocket, {"Type" : ReqType.CONNECT.value,"Data" : None})
-
     async for message in websocket:
         data = json.loads(message)
-        if(data["Test"] == "Hello, client!"):
-            print(f"Received from server: {data}")
-
-async def sendRequest(websocket : websockets.WebSocketClientProtocol, request : dict):
-    await websocket.send(json.dumps(request))
+        if(data["Type"] == ReqType.START.value):
+            print(data)
 
 def loadCardReverseImages():
     global cardReverseVertical, cardReverseHorizontal

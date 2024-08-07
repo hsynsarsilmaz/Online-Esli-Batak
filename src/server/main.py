@@ -14,8 +14,13 @@ for i in range(4):
 clientCounter = 0
 
 async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str):
+    myId = clientCounter
     saveClient(websocket)
     printPlayers()
+
+    if(myId == 3):
+        print("All players connected, starting game...")
+        await broadcast({"Type" : ReqType.START.value, "Data" : None})
     
     try:
         async for data in websocket:
@@ -28,7 +33,13 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
         print(f"An error occurred:\n{e}")
 
     finally:
-        set.remove(websocket)
+        connectedClients[myId]["socket"] = None
+
+async def broadcast(request : dict):
+    for player in connectedClients:
+        if player["socket"] != None:
+            await sendRequest(player["socket"], request)
+
 
 def saveClient(websocket):
     global clientCounter
@@ -46,7 +57,6 @@ def printPlayers():
 
 
 async def main():
-    
     try:
         async with websockets.serve(handleClient, IP, PORT):
             print("Online Eşli Batak Server has started...")
