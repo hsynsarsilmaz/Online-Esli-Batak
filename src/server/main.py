@@ -2,8 +2,10 @@ import asyncio
 import websockets
 import json
 import sys
+import random
 
 from ..common.networking import * 
+from ..common.card import *
 
 connectedClients = []
 for i in range(4):
@@ -12,6 +14,16 @@ for i in range(4):
         "id" : i + 1
     })
 clientCounter = 0
+cards = []
+
+def dealCards():
+    global cards
+    suits = ["H", "S", "D", "C"]
+    ranks = [int(n) for n in range(2, 15)]
+    for suit in suits:
+        for rank in ranks:
+             cards.append((suit, rank))
+    random.shuffle(cards)
 
 async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str):
     myId = clientCounter
@@ -20,7 +32,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
 
     if(myId == 3):
         print("All players connected, starting game...")
-        await broadcast({"Type" : ReqType.START.value, "Data" : None})
+        await broadcast({"Type" : ReqType.START.value, "Data" : cards})
     
     try:
         async for data in websocket:
@@ -57,6 +69,7 @@ def printPlayers():
 
 
 async def main():
+    dealCards()
     try:
         async with websockets.serve(handleClient, IP, PORT):
             print("Online Eşli Batak Server has started...")

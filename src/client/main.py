@@ -13,14 +13,17 @@ CARD_WIDTH, CARD_HEIGHT = 125, 182
 
 color = (2, 100, 42)
 cards = []
+cardSuitAndRank = []
 cardReverseVertical = None
 cardReverseHorizontal = None
 
 async def handleServerConnection(websocket : websockets.WebSocketClientProtocol):
+    global cardSuitAndRank
     async for message in websocket:
         data = json.loads(message)
         if(data["Type"] == ReqType.START.value):
-            print(data)
+            cardSuitAndRank = data["Data"]
+            loadCards()
 
 def loadCardReverseImages():
     global cardReverseVertical, cardReverseHorizontal
@@ -32,13 +35,10 @@ def loadCardReverseImages():
 
 def loadCardImages():
     global cards
-    suits = ["H", "S", "D", "C"]
-    ranks = [int(n) for n in range(2, 15)]
-    for suit in suits:
-        for rank in ranks:
-             image = pygame.image.load(f"res/img/cards/{rank}{suit}.png").convert_alpha()
-             image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
-             cards.append(Card(suit, rank,image))
+    for suit,rank in cardSuitAndRank:
+        image = pygame.image.load(f"res/img/cards/{rank}{suit}.png").convert_alpha()
+        image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
+        cards.append(Card(suit, rank ,image))
     random.shuffle(cards)
 
 def dealCards():
@@ -69,13 +69,10 @@ def loadCards():
     loadCardImages()
     dealCards()
 
-   
-
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Online Eşli Batak")
 clock = pygame.time.Clock()
-loadCards()
 
 async def main():
     
@@ -92,12 +89,20 @@ async def main():
             
             clock.tick(FPS)
 
-            for card in cards:
-                if card.visible:
-                    screen.blit(card.image, (card.xPos, card.yPos))
-                else:
-                    screen.blit(card.reverse, (card.xPos, card.yPos))
+            if len(cards) == 0:
+                font = pygame.font.Font(None, 36)
+                text = font.render("Waiting for other players...", True, (255, 255, 255))
+                textRect = text.get_rect()
+                textRect.center = (WIDTH // 2, HEIGHT // 2)
+                screen.blit(text, textRect)
+            else:
+                for card in cards:
+                    if card.visible:
+                        screen.blit(card.image, (card.xPos, card.yPos))
+                    else:
+                        screen.blit(card.reverse, (card.xPos, card.yPos))
 
+            
             pygame.display.flip()
 
             await asyncio.sleep(0)
