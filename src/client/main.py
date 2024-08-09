@@ -21,6 +21,8 @@ cardReverseHorizontal = None
 gameState = GameState.WAITING.value
 turn = 1
 
+biddingNumbers = []
+
 async def handleServerConnection(websocket : websockets.WebSocketClientProtocol):
     global cardSuitAndRank,myId, gameState
     async for message in websocket:
@@ -71,7 +73,20 @@ def dealCards():
             elif(i == 3):
                 c.xPos = 1350 
                 c.yPos = 88  + j * 50
-                c.reverse = cardReverseHorizontal 
+                c.reverse = cardReverseHorizontal
+
+def getBiddingNumberTexts():
+    global biddingNumbers
+    font = pygame.font.Font(None, 80)
+    for i in range(7,14):
+        text = font.render(str(i), True, (200,200,200))
+        highligtedText = font.render(str(i), True, (200,0,0))
+        row = (i - 7) // 3 
+        col = (i - 7) % 3 + (1 if i == 13 else 0)
+        xPos = 400 + 75 * col
+        yPos = 300 + 80 * row  
+        rect = text.get_rect(center=(xPos,yPos))
+        biddingNumbers.append((text, highligtedText, rect)) 
 
 
 def loadCards():
@@ -83,6 +98,7 @@ pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Online Eşli Batak")
 clock = pygame.time.Clock()
+getBiddingNumberTexts()
 
 async def main():
     
@@ -94,6 +110,11 @@ async def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    for text, highligtedText, rect in biddingNumbers:
+                        if rect.collidepoint(mouse_pos):
+                            pass
 
             screen.fill(color)
             
@@ -111,6 +132,13 @@ async def main():
                         screen.blit(card.image, (card.xPos, card.yPos))
                     else:
                         screen.blit(card.reverse, (card.xPos, card.yPos))
+
+            if gameState == GameState.BIDDING.value:
+                for text, highligtedText, rect in biddingNumbers:
+                    if rect.collidepoint(pygame.mouse.get_pos()):
+                        screen.blit(highligtedText, rect)
+                    else:
+                        screen.blit(text, rect)
 
             
             pygame.display.flip()
