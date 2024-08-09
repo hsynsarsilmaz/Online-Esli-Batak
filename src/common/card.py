@@ -1,8 +1,6 @@
 import pygame
 
 CARD_WIDTH, CARD_HEIGHT = 125, 182
-
-cards = []
 class Card:
     def __init__(self, suit : str, rank : str, image : pygame.Surface):
         self.suit = suit

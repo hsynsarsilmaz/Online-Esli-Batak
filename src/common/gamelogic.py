@@ -1,5 +1,5 @@
 import enum
-class GameState(enum.Enum):
+class GameStage(enum.Enum):
     WAITING = 0
     BIDDING = 1
 
@@ -7,7 +7,3 @@ class GameState(enum.Enum):
 WIDTH, HEIGHT = 1600, 900
 FPS = 60
 BGCOLOR = (2, 100, 42)
-gameState = GameState.WAITING.value
-myId = -1
-turn = 1
-

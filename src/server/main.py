@@ -1,6 +1,5 @@
 import asyncio
 import websockets
-import json
 import sys
 import random
 
@@ -33,7 +32,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
 
     await sendRequest(websocket, {"Type" : ReqType.CONNECT.value, "Data" : {
         "id" : myId,
-        "gameState" : GameState.BIDDING.value
+        "stage" : GameStage.BIDDING.value
     }})
 
     if(myId == 4):
