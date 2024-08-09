@@ -10,6 +10,7 @@ from ..common.card import *
 WIDTH, HEIGHT = 1600, 900
 FPS = 60
 CARD_WIDTH, CARD_HEIGHT = 125, 182
+myId = -1
 
 color = (2, 100, 42)
 cards = []
@@ -18,10 +19,15 @@ cardReverseVertical = None
 cardReverseHorizontal = None
 
 async def handleServerConnection(websocket : websockets.WebSocketClientProtocol):
-    global cardSuitAndRank
+    global cardSuitAndRank,myId
     async for message in websocket:
         data = json.loads(message)
-        if(data["Type"] == ReqType.START.value):
+        
+        if(data["Type"] == ReqType.CONNECT.value):
+            myId = data["Data"]
+            print("Connected: ", myId)
+
+        elif(data["Type"] == ReqType.START.value):
             cardSuitAndRank = data["Data"]
             loadCards()
 
