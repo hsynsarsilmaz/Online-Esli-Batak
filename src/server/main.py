@@ -6,6 +6,7 @@ import random
 
 from ..common.networking import * 
 from ..common.card import *
+from ..common.gamelogic import *
 
 connectedClients = []
 for i in range(4):
@@ -26,13 +27,16 @@ def dealCards():
     random.shuffle(cards)
 
 async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str):
-    myId = clientCounter
+    myId = clientCounter + 1
     saveClient(websocket)
     printPlayers()
 
-    await sendRequest(websocket, {"Type" : ReqType.CONNECT.value, "Data" : myId})
+    await sendRequest(websocket, {"Type" : ReqType.CONNECT.value, "Data" : {
+        "id" : myId,
+        "gameState" : GameState.BIDDING.value
+    }})
 
-    if(myId == 3):
+    if(myId == 4):
         print("All players connected, starting game...")
         await broadcast({"Type" : ReqType.START.value, "Data" : cards})
     
@@ -47,7 +51,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
         print(f"An error occurred:\n{e}")
 
     finally:
-        connectedClients[myId]["socket"] = None
+        connectedClients[myId - 1]["socket"] = None
 
 async def broadcast(request : dict):
     for player in connectedClients:

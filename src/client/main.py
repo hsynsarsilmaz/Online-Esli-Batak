@@ -6,6 +6,7 @@ import random
 
 from ..common.networking import * 
 from ..common.card import * 
+from ..common.gamelogic import *
 
 WIDTH, HEIGHT = 1600, 900
 FPS = 60
@@ -17,14 +18,17 @@ cards = []
 cardSuitAndRank = []
 cardReverseVertical = None
 cardReverseHorizontal = None
+gameState = GameState.WAITING.value
+turn = 1
 
 async def handleServerConnection(websocket : websockets.WebSocketClientProtocol):
-    global cardSuitAndRank,myId
+    global cardSuitAndRank,myId, gameState
     async for message in websocket:
         data = json.loads(message)
-        
+
         if(data["Type"] == ReqType.CONNECT.value):
-            myId = data["Data"]
+            myId = data["Data"]["id"]
+            gameState = data["Data"]["gameState"]
             print("Connected: ", myId)
 
         elif(data["Type"] == ReqType.START.value):
