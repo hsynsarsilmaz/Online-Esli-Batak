@@ -9,7 +9,7 @@ class GameText:
         self.waitingForPlayers = self.createWaitingForPlayers()
         self.biddingNumbers = self.createBiddingNumbers()
         self.biddingSuites = self.createBiddingSuites()
-
+        self.bidValues = []
         #Temporary
         self.skipBidding = self.createSkipBidding()
 
@@ -59,3 +59,11 @@ class GameText:
         textRect.center = (WIDTH // 2, HEIGHT // 2)
         
         return (text, textRect)
+    
+    def createBidValues(self,bid : int, trump : str):
+        font = pygame.font.Font(None, 50)
+        text = font.render(f"Bid : {bid} {trump}", True, (255, 255, 255))
+        textRect = text.get_rect()
+        textRect.topleft = (20, 20)
+        
+        self.bidValues = (text, textRect)

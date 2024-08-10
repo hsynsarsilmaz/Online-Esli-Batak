@@ -8,7 +8,7 @@ from ..common.card import *
 from ..common.gamelogic import *
 from ..common.text import *
 
-async def handleServerConnection(websocket : websockets.WebSocketClientProtocol, cards : list, gameState : dict):
+async def handleServerConnection(websocket : websockets.WebSocketClientProtocol, cards : list, gameState : dict, texts : GameText):
     async for message in websocket:
         data = json.loads(message)
 
@@ -24,6 +24,8 @@ async def handleServerConnection(websocket : websockets.WebSocketClientProtocol,
             gameState["trump"] = data["Data"]["trump"]
             gameState["bidder"] = data["Data"]["bidder"]
             gameState["stage"] = GameStage.PLAYING.value
+
+            texts.createBidValues(gameState["bid"],gameState["trump"])
 
 def renderBidding(screen : pygame.Surface, texts : GameText, gameState : dict):
     for text, highligtedText, rect in texts.biddingNumbers:
@@ -69,7 +71,7 @@ async def main():
 
     async with websockets.connect(URI) as websocket:
 
-        message_handler = asyncio.create_task(handleServerConnection(websocket,cards,gameState))
+        message_handler = asyncio.create_task(handleServerConnection(websocket,cards,gameState,texts))
 
         while True:
             for event in pygame.event.get():
@@ -102,6 +104,9 @@ async def main():
 
             elif gameState["stage"] == GameStage.BIDDING.value:
                 renderBidding(screen,texts,gameState)
+
+            elif gameState["stage"] == GameStage.PLAYING.value:
+                screen.blit(texts.bidValues[0], texts.bidValues[1])
             
             pygame.display.flip()
             await asyncio.sleep(0)
