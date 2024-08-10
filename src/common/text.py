@@ -10,6 +10,9 @@ class GameText:
         self.biddingNumbers = self.createBiddingNumbers()
         self.biddingSuites = self.createBiddingSuites()
 
+        #Temporary
+        self.skipBidding = self.createSkipBidding()
+
     def createBiddingNumbers(self) -> list:
         biddingNumbers = []
         font = pygame.font.Font(None, 80)
@@ -44,6 +47,14 @@ class GameText:
     def createWaitingForPlayers(self) -> tuple:
         font = pygame.font.Font(None, 36)
         text = font.render("Waiting for other players...", True, (255, 255, 255))
+        textRect = text.get_rect()
+        textRect.center = (WIDTH // 2, HEIGHT // 2)
+        
+        return (text, textRect)
+    
+    def createSkipBidding(self) -> tuple:
+        font = pygame.font.Font(None, 36)
+        text = font.render("Skip Bidding", True, (255, 255, 255))
         textRect = text.get_rect()
         textRect.center = (WIDTH // 2, HEIGHT // 2)
         

@@ -30,10 +30,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
     saveClient(websocket)
     printPlayers()
 
-    await sendRequest(websocket, {"Type" : ReqType.CONNECT.value, "Data" : {
-        "id" : myId,
-        "stage" : GameStage.BIDDING.value
-    }})
+    await sendRequest(websocket, {"Type" : ReqType.CONNECT.value, "Data" : myId})
 
     if(myId == 4):
         print("All players connected, starting game...")
