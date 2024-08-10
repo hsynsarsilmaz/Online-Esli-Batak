@@ -9,3 +9,10 @@ class GameStage(enum.Enum):
 WIDTH, HEIGHT = 1600, 900
 FPS = 60
 BGCOLOR = (2, 100, 42)
+
+class Deck:
+    def __init__(self):
+        self.cards = []
+
+    def createDeck(self,cards : list):
+        self.cards = cards

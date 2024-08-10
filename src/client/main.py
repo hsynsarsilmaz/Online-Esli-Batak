@@ -8,7 +8,7 @@ from ..common.card import *
 from ..common.gamelogic import *
 from ..common.text import *
 
-async def handleServerConnection(websocket : websockets.WebSocketClientProtocol, cards : list, gameState : dict, texts : GameText):
+async def handleServerConnection(websocket : websockets.WebSocketClientProtocol, cards : list, myDeck : Deck, pairDeck: Deck, gameState : dict, texts : GameText):
     async for message in websocket:
         data = json.loads(message)
 
@@ -18,6 +18,9 @@ async def handleServerConnection(websocket : websockets.WebSocketClientProtocol,
         elif(data["Type"] == ReqType.START.value):
             loadCards(data["Data"],cards)
             gameState["stage"] = GameStage.BIDDING.value
+            myDeck.createDeck(cards[(gameState["myId"] - 1) * 13 : gameState["myId"] * 13])
+            #pair is 1 with 3 and 2 with 4
+            pairDeck.createDeck(cards[(gameState["myId"] % 2) * 13 : ((gameState["myId"] % 2) + 1) * 13])
 
         elif(data["Type"] == ReqType.GAMESTART.value):
             gameState["bid"] = data["Data"]["bid"]
@@ -67,7 +70,9 @@ async def main():
         "bidder" : 0
     }
     cards = []
-    texts = GameText()    
+    texts = GameText()
+    myDeck = Deck()
+    pairDeck = Deck()   
 
     async with websockets.connect(URI) as websocket:
 
