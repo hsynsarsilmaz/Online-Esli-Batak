@@ -14,11 +14,16 @@ async def handleServerConnection(websocket : websockets.WebSocketClientProtocol,
 
         if(data["Type"] == ReqType.CONNECT.value):
             gameState["myId"] = data["Data"]
-            print("Connected: ", gameState)
 
         elif(data["Type"] == ReqType.START.value):
             loadCards(data["Data"],cards)
             gameState["stage"] = GameStage.BIDDING.value
+
+        elif(data["Type"] == ReqType.GAMESTART.value):
+            gameState["bid"] = data["Data"]["bid"]
+            gameState["trump"] = data["Data"]["trump"]
+            gameState["bidder"] = data["Data"]["bidder"]
+            gameState["stage"] = GameStage.PLAYING.value
 
 def renderBidding(screen : pygame.Surface, texts : GameText, gameState : dict):
     for text, highligtedText, rect in texts.biddingNumbers:
@@ -54,7 +59,10 @@ async def main():
     gameState = {
         "myId" : -1,
         "turn" : 1,
-        "stage" : GameStage.WAITING.value
+        "stage" : GameStage.WAITING.value,
+        "bid" : 0,
+        "trump" : "",
+        "bidder" : 0
     }
     cards = []
     texts = GameText()    
@@ -79,7 +87,10 @@ async def main():
 
                     #temporary
                     if gameState["turn"] == gameState["myId"] and  texts.skipBidding[1].collidepoint(mouse_pos):
-                        pass
+                        await sendRequest(websocket, {"Type" : ReqType.BIDSKIP.value, "Data" : {
+                            "bid" : 7,
+                            "trump" : "S"
+                        }})
 
             screen.fill(BGCOLOR)
             clock.tick(FPS)

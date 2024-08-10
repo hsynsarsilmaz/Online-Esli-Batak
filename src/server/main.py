@@ -37,8 +37,16 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
         await broadcast({"Type" : ReqType.START.value, "Data" : cards})
     
     try:
-        async for data in websocket:
-            print("Received from client:", data)
+        async for message in websocket:
+            data = json.loads(message)
+
+            if data["Type"] == ReqType.BIDSKIP.value:
+                print(f"Player {myId} skipped bidding")
+                await broadcast({"Type" : ReqType.GAMESTART.value, "Data" : {
+                    "bid" : data["Data"]["bid"],
+                    "trump" : data["Data"]["trump"],
+                    "bidder" : myId
+                }})
     
     except websockets.ConnectionClosed:
         print("Client disconnected")

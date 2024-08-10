@@ -11,6 +11,8 @@ class ReqType(enum.Enum):
     CONNECT = 0
     DISCONNECT = 1
     START = 2
+    BIDSKIP = 3
+    GAMESTART = 4
 
 async def sendRequest(websocket : websockets.WebSocketClientProtocol, request : dict):
     await websocket.send(json.dumps(request))
