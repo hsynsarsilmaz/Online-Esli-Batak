@@ -20,22 +20,22 @@ async def handleServerConnection(websocket : websockets.WebSocketClientProtocol,
         elif(data["Type"] == ReqType.START.value):
             loadCards(data["Data"],cards)
 
-def renderBidding(screen : pygame.Surface, texts : dict):
-    for text, highligtedText, rect in texts["biddingNumbers"]:
+def renderBidding(screen : pygame.Surface, texts : GameText):
+    for text, highligtedText, rect in texts.biddingNumbers:
         if rect.collidepoint(pygame.mouse.get_pos()):
             screen.blit(highligtedText, rect)
         else:
             screen.blit(text, rect)
     
-    for text, highligtedText, rect in texts["biddingSuites"]:
+    for text, highligtedText, rect in texts.biddingSuites:
         if rect.collidepoint(pygame.mouse.get_pos()):
             screen.blit(highligtedText, rect)
         else:
             screen.blit(text, rect)
 
-def renderCards(cards : list, screen : pygame.Surface, texts : dict):
+def renderCards(cards : list, screen : pygame.Surface, texts : GameText):
     if len(cards) == 0:
-        screen.blit(texts["waitingForPlayers"][0], texts["waitingForPlayers"][1])
+        screen.blit(texts.waitingForPlayers[0], texts.waitingForPlayers[1])
     else:
         for card in cards:
             if card.visible:
@@ -56,8 +56,7 @@ async def main():
         "stage" : GameStage.WAITING.value
     }
     cards = []
-    texts = {}    
-    initTexts(texts)
+    texts = GameText()    
 
     async with websockets.connect(URI) as websocket:
 
@@ -69,11 +68,11 @@ async def main():
                     return
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
-                    for text, highligtedText, rect in texts["biddingNumbers"]:
+                    for text, highligtedText, rect in texts.biddingNumbers:
                         if rect.collidepoint(mouse_pos):
                             pass
 
-                    for text, highligtedText, rect in texts["biddingSuites"]:
+                    for text, highligtedText, rect in texts.biddingSuites:
                         if rect.collidepoint(mouse_pos):
                             pass
 
