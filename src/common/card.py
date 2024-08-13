@@ -35,32 +35,3 @@ def loadCardImages(SuitsAndRanks, cards):
         image = pygame.image.load(f"res/img/cards/{rank}{suit}.png").convert_alpha()
         image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
         cards.append(Card(suit, rank, image))
-
-
-def dealCards(cardReverseVertical, cardReverseHorizontal, cards):
-    for i in range(4):
-        for j in range(13):
-            c = cards[j + i * 13]
-            if i == 0:
-                c.xPos = 317 + j * 70
-                c.yPos = 668
-                c.reverse = cardReverseVertical
-                c.visible = True
-            elif i == 1:
-                c.xPos = 68
-                c.yPos = 88 + j * 50
-                c.reverse = cardReverseHorizontal
-            elif i == 2:
-                c.xPos = 317 + j * 70
-                c.yPos = 50
-                c.reverse = cardReverseVertical
-            elif i == 3:
-                c.xPos = 1350
-                c.yPos = 88 + j * 50
-                c.reverse = cardReverseHorizontal
-
-
-def loadCards(SuitsAndRanks, cards):
-    cardReverseVertical, cardReverseHorizontal = loadCardReverseImages()
-    loadCardImages(SuitsAndRanks, cards)
-    dealCards(cardReverseVertical, cardReverseHorizontal, cards)

@@ -11,28 +11,21 @@ from ..common.text import *
 
 async def handleServerConnection(
     websocket: websockets.WebSocketClientProtocol,
-    cards: list,
-    myDeck: Deck,
-    pairDeck: Deck,
+    decks: dict,
     gameState: dict,
     texts: GameText,
 ):
     async for message in websocket:
         data = json.loads(message)
+        cards = []
 
         if data["Type"] == ReqType.CONNECT.value:
             gameState["myId"] = data["Data"]
 
         elif data["Type"] == ReqType.START.value:
-            loadCards(data["Data"], cards)
+            loadCardImages(data["Data"], cards)
+            dealCards(cards, decks, gameState["myId"])
             gameState["stage"] = GameStage.BIDDING.value
-            myDeck.createDeck(
-                cards[(gameState["myId"] - 1) * 13 : gameState["myId"] * 13]
-            )
-            # pair is 1 with 3 and 2 with 4
-            pairDeck.createDeck(
-                cards[(gameState["myId"] % 2) * 13 : ((gameState["myId"] % 2) + 1) * 13]
-            )
 
         elif data["Type"] == ReqType.GAMESTART.value:
             gameState["bid"] = data["Data"]["bid"]
@@ -61,12 +54,13 @@ def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
         screen.blit(texts.skipBidding[0], texts.skipBidding[1])
 
 
-def renderCards(cards: list, screen: pygame.Surface, texts: GameText):
-    for card in cards:
-        if card.visible:
-            screen.blit(card.image, (card.xPos, card.yPos))
-        else:
-            screen.blit(card.reverse, (card.xPos, card.yPos))
+def renderCards(decks: dict, screen: pygame.Surface, texts: GameText):
+    for deck in decks.values():
+        for card in deck.cards:
+            if card.visible:
+                screen.blit(card.image, (card.xPos, card.yPos))
+            else:
+                screen.blit(card.reverse, (card.xPos, card.yPos))
 
 
 async def main():
@@ -84,7 +78,7 @@ async def main():
         "trump": "",
         "bidder": 0,
     }
-    cards = []
+    decks = {}
     texts = GameText()
     myDeck = Deck()
     pairDeck = Deck()
@@ -92,7 +86,7 @@ async def main():
     async with websockets.connect(URI) as websocket:
 
         message_handler = asyncio.create_task(
-            handleServerConnection(websocket, cards, myDeck, pairDeck, gameState, texts)
+            handleServerConnection(websocket, decks, gameState, texts)
         )
 
         while True:
@@ -124,7 +118,7 @@ async def main():
             screen.fill(BGCOLOR)
             clock.tick(FPS)
 
-            renderCards(cards, screen, texts)
+            renderCards(decks, screen, texts)
 
             if gameState["stage"] == GameStage.WAITING.value:
                 screen.blit(texts.waitingForPlayers[0], texts.waitingForPlayers[1])
