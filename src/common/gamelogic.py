@@ -63,17 +63,13 @@ def rePositionCards(decks: dict):
     for key, deck in decks.items():
         if key == "my":
             for i, card in enumerate(deck.cards):
-                card.xPos = 317 + i * 70
-                card.yPos = 668
+                card.rect.topleft = (317 + i * 70, 668)
         elif key == "left":
             for i, card in enumerate(deck.cards):
-                card.xPos = 68
-                card.yPos = 88 + i * 50
+                card.rect.topleft = (68, 88 + i * 50)
         elif key == "mate":
             for i, card in enumerate(deck.cards):
-                card.xPos = 317 + i * 70
-                card.yPos = 50
+                card.rect.topleft = (317 + i * 70, 50)
         elif key == "right":
             for i, card in enumerate(deck.cards):
-                card.xPos = 1350
-                card.yPos = 88 + i * 50
+                card.rect.topleft = (1350, 88 + i * 50)

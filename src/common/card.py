@@ -11,10 +11,8 @@ class Card:
         self.image = image
         self.reverse = None
         self.player = None
-        self.xPos = 0
-        self.yPos = 0
         self.visible = False
-
+        self.rect = self.image.get_rect()
 
 def loadCardReverseImages():
     cardReverseVertical = pygame.image.load("res/img/cards/RV.png").convert_alpha()
