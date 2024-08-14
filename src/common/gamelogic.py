@@ -33,9 +33,55 @@ class Deck:
                 return card
         return None
 
-    def markPlayableCards(self):
+    def markPlayableCards(self, isFirst: bool, suit: str, rank: int, trump: str):
+        # Every card except trumps can be played in first hand
+        print(isFirst, suit, rank, trump)
+        if isFirst:
+            for card in self.cards:
+                if card.suit != trump:
+                    card.playable = True
+            return
+
+        playableCards = []
+
+        # If the player has higher cards of the same suit, they must be played
         for card in self.cards:
-            card.playable = True
+            if card.suit == suit and card.rank > rank:
+                playableCards.append(card)
+
+        if len(playableCards) > 0:
+            for playableCard in playableCards:
+                playableCard.playable = True
+            return
+
+        # If the player doesn't have higher cards of the same suit, they can play a lesser card of the same suit
+        for card in self.cards:
+            if card.suit == suit:
+                playableCards.append(card)
+
+        if len(playableCards) > 0:
+            for playableCard in playableCards:
+                playableCard.playable = True
+            return
+
+        # If the player doesn't have any cards of the same suit, they can play any trump card
+        # This will effectively change the suit to trump
+        for card in self.cards:
+            if card.suit == trump:
+                playableCards.append(card)
+
+        if len(playableCards) > 0:
+            for playableCard in playableCards:
+                playableCard.playable = True
+            return
+
+        # If the player doesn't have any cards of interest they can play any card without effect
+        for playableCard in playableCards:
+            playableCard.playable = True
+
+    def unMarkMyCards(self):
+        for card in self.cards:
+            card.playable = False
 
 
 def dealCards(cards: list, decks: dict, myId: int):
@@ -87,16 +133,30 @@ def rePositionCards(decks: dict):
 class Turn:
     def __init__(self):
         self.number = 0
-        self.lastCard = None
+        self.lastSuit = ""
+        self.lastRank = 0
+        self.trump = ""
         self.currentPlayer = 0
         self.playedCount = 0
         self.winner = -1
 
     def playTurn(self, suit: str, rank: int, player: int):
-        self.lastCard = {"suit": suit, "rank": rank}
-        self.currentPlayer = (player + 1) % 4
-        self.playedCount += 1
         if self.winner == -1:
             self.winner = player
+        else:
+            if suit == self.trump and self.lastSuit != self.trump:
+                self.winner = player
+            elif suit == self.lastSuit and rank > self.lastRank:
+                self.winner = player
+        self.lastSuit = suit
+        self.lastRank = rank
+        self.currentPlayer = (player + 1) % 4
+        self.playedCount += 1
+        print("Winner:", self.winner)
 
-        return self.lastCard, self.currentPlayer
+    def endTurn(self):
+        self.playedCount = 0
+        self.number += 1
+        self.currentPlayer = self.winner
+        self.winner = -1
+        self.trump = ""

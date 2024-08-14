@@ -42,6 +42,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
 
             if data["Type"] == ReqType.BIDSKIP.value:
                 print(f"Player {myId + 1} skipped bidding")
+                turn.trump = data["Data"]["trump"]
                 await broadcast(
                     {
                         "Type": ReqType.GAMESTART.value,
@@ -53,14 +54,20 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
                     }
                 )
 
-            if data["Type"] == ReqType.PLAY.value:
+            if data["Type"] == ReqType.PLAYCARD.value:
+                winner = -1
                 turn.playTurn(data["Data"]["suit"], data["Data"]["rank"], myId)
+                if turn.playedCount == 4:
+                    winner = turn.winner
+                    turn.endTurn()
                 await broadcast(
                     {
-                        "Type": ReqType.ANIMATION.value,
+                        "Type": ReqType.PLAYTURN.value,
                         "Data": {
-                            "suit": data["Data"]["suit"],
-                            "rank": data["Data"]["rank"],
+                            "suit": turn.lastSuit,
+                            "rank": turn.lastRank,
+                            "currentPlayer": turn.currentPlayer,
+                            "winner": winner,
                         },
                     }
                 )
