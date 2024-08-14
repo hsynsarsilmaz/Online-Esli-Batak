@@ -33,6 +33,10 @@ class Deck:
                 return card
         return None
 
+    def markPlayableCards(self):
+        for card in self.cards:
+            card.playable = True
+
 
 def dealCards(cards: list, decks: dict, myId: int):
     cardReverseVertical, cardReverseHorizontal = loadCardReverseImages()
