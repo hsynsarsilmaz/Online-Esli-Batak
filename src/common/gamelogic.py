@@ -29,7 +29,6 @@ class Deck:
 
 
 def dealCards(cards: list, decks: dict, myId: int):
-    myId -= 1
     cardReverseVertical, cardReverseHorizontal = loadCardReverseImages()
     decks["my"] = Deck()
     decks["left"] = Deck()

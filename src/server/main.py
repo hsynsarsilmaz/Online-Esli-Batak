@@ -11,6 +11,7 @@ connectedClients = []
 for i in range(4):
     connectedClients.append({"socket": None, "id": i + 1})
 clientCounter = 0
+turn = 0
 cards = []
 
 
@@ -25,13 +26,13 @@ def dealCards():
 
 
 async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str):
-    myId = clientCounter + 1
+    myId = clientCounter
     saveClient(websocket)
     printPlayers()
 
     await sendRequest(websocket, {"Type": ReqType.CONNECT.value, "Data": myId})
 
-    if myId == 4:
+    if myId == 3:
         print("All players connected, starting game...")
         await broadcast({"Type": ReqType.START.value, "Data": cards})
 
@@ -40,7 +41,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
             data = json.loads(message)
 
             if data["Type"] == ReqType.BIDSKIP.value:
-                print(f"Player {myId} skipped bidding")
+                print(f"Player {myId + 1} skipped bidding")
                 await broadcast(
                     {
                         "Type": ReqType.GAMESTART.value,
@@ -59,7 +60,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
         print(f"An error occurred:\n{e}")
 
     finally:
-        connectedClients[myId - 1]["socket"] = None
+        connectedClients[myId]["socket"] = None
 
 
 async def broadcast(request: dict):

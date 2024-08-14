@@ -82,7 +82,7 @@ async def main():
     clock = pygame.time.Clock()
     gameState = {
         "myId": -1,
-        "turn": 1,
+        "turn": 0,
         "stage": GameStage.WAITING.value,
         "bid": 0,
         "trump": "",
@@ -111,9 +111,10 @@ async def main():
                         if rect.collidepoint(mouse_pos):
                             pass
 
-                    for card in decks["my"].cards:
+                    for card in reversed(decks["my"].cards):
                         if card.rect.collidepoint(mouse_pos):
                             print(card.rank, card.suit)
+                            break
 
                     # temporary
                     if gameState["turn"] == gameState["myId"] and texts.skipBidding[
