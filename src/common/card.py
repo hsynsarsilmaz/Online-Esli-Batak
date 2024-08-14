@@ -12,6 +12,9 @@ class Card:
         self.reverse = None
         self.player = None
         self.visible = False
+        self.xVel = 0
+        self.yVel = 0
+        self.frame = 0
         self.rect = self.image.get_rect()
 
 def loadCardReverseImages():

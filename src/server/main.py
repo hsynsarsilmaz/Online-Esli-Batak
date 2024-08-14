@@ -54,7 +54,16 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
                 )
 
             if data["Type"] == ReqType.PLAY.value:
-                print(data["Data"])
+                turn.playTurn(data["Data"]["suit"], data["Data"]["rank"], myId)
+                await broadcast(
+                    {
+                        "Type": ReqType.ANIMATION.value,
+                        "Data": {
+                            "suit": data["Data"]["suit"],
+                            "rank": data["Data"]["rank"],
+                        },
+                    }
+                )
 
     except websockets.ConnectionClosed:
         print("Client disconnected")

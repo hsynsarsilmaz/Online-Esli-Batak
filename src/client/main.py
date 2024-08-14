@@ -14,6 +14,7 @@ async def handleServerConnection(
     decks: dict,
     gameState: dict,
     texts: GameText,
+    animations: list,
 ):
     async for message in websocket:
         data = json.loads(message)
@@ -35,6 +36,20 @@ async def handleServerConnection(
 
             texts.createBidValues(gameState["bid"], gameState["trump"])
 
+        elif data["Type"] == ReqType.ANIMATION.value:
+            card = None
+            for key, deck in decks.items():
+                card = deck.findCard(data["Data"]["suit"], data["Data"]["rank"])
+                if card:
+                    deck.cards.remove(card)
+                    break
+            # move the card to center
+            card.xVel = (WIDTH // 2 - card.rect.center[0]) / 60
+            card.yVel = (HEIGHT // 2 - card.rect.center[1]) / 60
+            card.frame = 0
+
+            animations.append(card)
+
 
 def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
     for text, highligtedText, rect in texts.biddingNumbers:
@@ -54,7 +69,7 @@ def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
         screen.blit(texts.skipBidding[0], texts.skipBidding[1])
 
 
-def renderCards(decks: dict, screen: pygame.Surface, texts: GameText):
+def renderCards(decks: dict, screen: pygame.Surface, texts: GameText, animations: list):
     selectedCard = None
     for card in reversed(decks["my"].cards):
         if card.rect.collidepoint(pygame.mouse.get_pos()):
@@ -71,6 +86,19 @@ def renderCards(decks: dict, screen: pygame.Surface, texts: GameText):
 
             else:
                 screen.blit(card.reverse, card.rect)
+
+    for animation in animations:
+        if animation.frame < 60:
+            animation.rect.x += animation.xVel
+            animation.rect.y += animation.yVel
+            animation.frame += 1
+        elif animation.frame == 60:
+            animation.xVel = 0
+            animation.yVel = 0
+            animation.rect.center = (WIDTH // 2, HEIGHT // 2)
+            animation.frame += 1
+
+        screen.blit(animation.image, animation.rect)
 
 
 async def main():
@@ -89,12 +117,13 @@ async def main():
         "bidder": 0,
     }
     decks = {}
+    animations = []
     texts = GameText()
 
     async with websockets.connect(URI) as websocket:
 
         message_handler = asyncio.create_task(
-            handleServerConnection(websocket, decks, gameState, texts)
+            handleServerConnection(websocket, decks, gameState, texts, animations)
         )
 
         while True:
@@ -120,10 +149,10 @@ async def main():
                                     "Data": {
                                         "suit": card.suit,
                                         "rank": card.rank,
-                                        "id": gameState["myId"],
                                     },
                                 },
                             )
+                            break
 
                     # temporary
                     if gameState["turn"] == gameState["myId"] and texts.skipBidding[
@@ -145,11 +174,11 @@ async def main():
 
             elif gameState["stage"] == GameStage.BIDDING.value:
                 renderBidding(screen, texts, gameState)
-                renderCards(decks, screen, texts)
+                renderCards(decks, screen, texts, animations)
 
             elif gameState["stage"] == GameStage.PLAYING.value:
                 screen.blit(texts.bidValues[0], texts.bidValues[1])
-                renderCards(decks, screen, texts)
+                renderCards(decks, screen, texts, animations)
 
             pygame.display.flip()
             await asyncio.sleep(0)

@@ -27,6 +27,12 @@ class Deck:
     def sortDeck(self):
         self.cards.sort(key=lambda x: (SUIT_ORDER[x.suit], x.rank))
 
+    def findCard(self, suit: str, rank: int):
+        for card in self.cards:
+            if card.suit == suit and card.rank == rank:
+                return card
+        return None
+
 
 def dealCards(cards: list, decks: dict, myId: int):
     cardReverseVertical, cardReverseHorizontal = loadCardReverseImages()
