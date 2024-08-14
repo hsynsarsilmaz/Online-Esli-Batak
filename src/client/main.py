@@ -79,10 +79,13 @@ def renderCards(decks: dict, screen: pygame.Surface, texts: GameText, animations
     for key, deck in decks.items():
         for card in deck.cards:
             if card.visible:
-                if selectedCard and card == selectedCard:
-                    screen.blit(card.image, card.rect.move(0, -20))
+                if card.playable:
+                    if selectedCard and card == selectedCard:
+                        screen.blit(card.image, card.rect.move(0, -20))
+                    else:
+                        screen.blit(card.image, card.rect)
                 else:
-                    screen.blit(card.image, card.rect)
+                    screen.blit(card.grayImage, card.rect)
 
             else:
                 screen.blit(card.reverse, card.rect)

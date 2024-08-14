@@ -9,13 +9,22 @@ class Card:
         self.suit = suit
         self.rank = rank
         self.image = image
+        self.grayImage = self.createGrayImage()
         self.reverse = None
         self.player = None
         self.visible = False
         self.xVel = 0
         self.yVel = 0
         self.frame = 0
+        self.playable = False
         self.rect = self.image.get_rect()
+
+    def createGrayImage(self):
+        grayImage = pygame.Surface(self.image.get_size(), flags=pygame.SRCALPHA)
+        grayImage.fill((128, 128, 128, 255))
+        grayImage.blit(self.image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        return grayImage
+
 
 def loadCardReverseImages():
     cardReverseVertical = pygame.image.load("res/img/cards/RV.png").convert_alpha()
