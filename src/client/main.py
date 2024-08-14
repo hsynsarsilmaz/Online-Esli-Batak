@@ -113,8 +113,17 @@ async def main():
 
                     for card in reversed(decks["my"].cards):
                         if card.rect.collidepoint(mouse_pos):
-                            print(card.rank, card.suit)
-                            break
+                            await sendRequest(
+                                websocket,
+                                {
+                                    "Type": ReqType.PLAY.value,
+                                    "Data": {
+                                        "suit": card.suit,
+                                        "rank": card.rank,
+                                        "id": gameState["myId"],
+                                    },
+                                },
+                            )
 
                     # temporary
                     if gameState["turn"] == gameState["myId"] and texts.skipBidding[

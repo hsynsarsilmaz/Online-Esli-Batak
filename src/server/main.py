@@ -11,7 +11,7 @@ connectedClients = []
 for i in range(4):
     connectedClients.append({"socket": None, "id": i + 1})
 clientCounter = 0
-turn = 0
+turn = Turn()
 cards = []
 
 
@@ -52,6 +52,9 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
                         },
                     }
                 )
+
+            if data["Type"] == ReqType.PLAY.value:
+                print(data["Data"])
 
     except websockets.ConnectionClosed:
         print("Client disconnected")

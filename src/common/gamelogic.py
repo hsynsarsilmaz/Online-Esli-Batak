@@ -72,3 +72,21 @@ def rePositionCards(decks: dict):
         elif key == "right":
             for i, card in enumerate(deck.cards):
                 card.rect.topleft = (1350, 88 + i * 50)
+
+
+class Turn:
+    def __init__(self):
+        self.number = 0
+        self.lastCard = None
+        self.currentPlayer = 0
+        self.playedCount = 0
+        self.winner = -1
+
+    def playTurn(self, suit: str, rank: int, player: int):
+        self.lastCard = {"suit": suit, "rank": rank}
+        self.currentPlayer = (player + 1) % 4
+        self.playedCount += 1
+        if self.winner == -1:
+            self.winner = player
+
+        return self.lastCard, self.currentPlayer
