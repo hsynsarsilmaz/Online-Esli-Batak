@@ -16,6 +16,7 @@ class ReqType(enum.Enum):
     GAMESTART = 4
     PLAYCARD = 5
     PLAYTURN = 6
+    GAMEEND = 7
 
 
 async def sendRequest(websocket: websockets.WebSocketClientProtocol, request: dict):

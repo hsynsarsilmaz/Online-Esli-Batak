@@ -13,6 +13,7 @@ class GameText:
         self.bidValues = []
         # Temporary
         self.skipBidding = self.createSkipBidding()
+        self.winner = None
 
     def createBiddingNumbers(self) -> list:
         biddingNumbers = []
@@ -68,3 +69,15 @@ class GameText:
         textRect.topleft = (20, 20)
 
         self.bidValues = (text, textRect)
+
+    def createWinner(self, winner: int):
+        font = pygame.font.Font(None, 50)
+        if winner == 0:
+            text = font.render(f"Player 1 and 3 has won !", True, (255, 255, 255))
+        else:
+            text = font.render(f"Player 2 and 4 has won !", True, (255, 255, 255))
+
+        textRect = text.get_rect()
+        textRect.topleft = (20, 20)
+
+        self.winner = (text, textRect)

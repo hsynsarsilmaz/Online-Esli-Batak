@@ -44,7 +44,7 @@ async def handleServerConnection(
                 decks["my"].unMarkMyCards()
             else:
                 decks["my"].markPlayableCards(
-                    False,
+                    data["Data"]["isFirstTurn"],
                     data["Data"]["suit"],
                     data["Data"]["rank"],
                     gameState["trump"],
@@ -64,6 +64,10 @@ async def handleServerConnection(
             # if winner is not empty
             if data["Data"]["winner"] != -1:
                 gameState["winner"] = data["Data"]["winner"]
+
+        elif data["Type"] == ReqType.GAMEEND.value:
+            gameState["champion"] = data["Data"]["champion"]
+            texts.createWinner(gameState["champion"])
 
 
 def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
@@ -125,6 +129,8 @@ def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState
         elif animation.frame == 60:
             if animation.destroy:
                 animations.remove(animation)
+                if len(animations) == 0:
+                    gameState["stage"] = GameStage.END.value
             else:
                 animation.xVel = 0
                 animation.yVel = 0
@@ -158,6 +164,7 @@ async def main():
         "trump": "",
         "bidder": 0,
         "winner": -1,
+        "champion": -1,
     }
     decks = {}
     animations = []
@@ -223,6 +230,9 @@ async def main():
             elif gameState["stage"] == GameStage.PLAYING.value:
                 screen.blit(texts.bidValues[0], texts.bidValues[1])
                 renderCards(decks, screen, animations, gameState)
+
+            elif gameState["stage"] == GameStage.END.value:
+                screen.blit(texts.winner[0], texts.winner[1])
 
             pygame.display.flip()
             await asyncio.sleep(0)

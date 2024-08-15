@@ -35,7 +35,6 @@ class Deck:
 
     def markPlayableCards(self, isFirst: bool, suit: str, rank: int, trump: str):
         # Every card except trumps can be played in first hand
-        print(isFirst, suit, rank, trump)
         if isFirst:
             nonTrumpSuitCount = 0
             for card in self.cards:
@@ -160,7 +159,6 @@ class Turn:
         self.lastRank = rank
         self.currentPlayer = (player + 1) % 4
         self.playedCount += 1
-        print("Winner:", self.winner)
 
     def endTurn(self):
         self.playedCount = 0
