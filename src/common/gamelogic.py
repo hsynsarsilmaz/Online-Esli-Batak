@@ -76,8 +76,8 @@ class Deck:
             return
 
         # If the player doesn't have any cards of interest they can play any card without effect
-        for playableCard in playableCards:
-            playableCard.playable = True
+        for card in self.cards:
+            card.playable = True
 
     def unMarkMyCards(self):
         for card in self.cards:
