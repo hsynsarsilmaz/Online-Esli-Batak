@@ -37,8 +37,16 @@ class Deck:
         # Every card except trumps can be played in first hand
         print(isFirst, suit, rank, trump)
         if isFirst:
+            nonTrumpSuitCount = 0
             for card in self.cards:
                 if card.suit != trump:
+                    nonTrumpSuitCount += 1
+            if nonTrumpSuitCount > 0:
+                for card in self.cards:
+                    if card.suit != trump:
+                        card.playable = True
+            else:
+                for card in self.cards:
                     card.playable = True
             return
 
