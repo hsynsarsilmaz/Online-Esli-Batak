@@ -112,7 +112,7 @@ def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState
                 animation.calculateWinnerVelocities(
                     gameState["myId"], gameState["winner"]
                 )
-                animation.frame = -20 * i
+                animation.frame = -15 * i
                 animation.destroy = True
 
     for animation in animations:
@@ -123,12 +123,13 @@ def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState
             animation.rect.y += animation.yVel
             animation.frame += 1
         elif animation.frame == 60:
-            animation.xVel = 0
-            animation.yVel = 0
-            animation.rect.center = (WIDTH // 2, HEIGHT // 2)
-            animation.frame += 1
             if animation.destroy:
                 animations.remove(animation)
+            else:
+                animation.xVel = 0
+                animation.yVel = 0
+                animation.rect.center = (WIDTH // 2, HEIGHT // 2)
+                animation.frame += 1
 
         screen.blit(animation.image, animation.rect)
 
