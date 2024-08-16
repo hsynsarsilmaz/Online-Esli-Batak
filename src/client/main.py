@@ -64,40 +64,42 @@ async def handleServerConnection(
             gameState["winner"] = data["Data"]["winner"]
             gameState["champion"] = data["Data"]["champion"]
 
-            if gameState["champion"] != -1:
+            if gameState["champion"] != UNDEFINED:
                 gameState["champion"] = data["Data"]["champion"]
                 texts.createWinner(gameState["champion"])
 
 
-def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
-    for text, highligtedText, rect in texts.biddingNumbers:
+def renderText(items: list, screen: pygame.Surface):
+    for text, highligtedText, rect in items:
         if rect.collidepoint(pygame.mouse.get_pos()):
             screen.blit(highligtedText, rect)
         else:
             screen.blit(text, rect)
 
-    for text, highligtedText, rect in texts.biddingSuites:
-        if rect.collidepoint(pygame.mouse.get_pos()):
-            screen.blit(highligtedText, rect)
-        else:
-            screen.blit(text, rect)
+
+def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
+    renderText(texts.biddingNumbers, screen)
+    renderText(texts.biddingSuites, screen)
 
     # Temporary
     if gameState["currentPlayer"] == gameState["myId"]:
-        screen.blit(texts.skipBidding[0], texts.skipBidding[1])
+        renderText([texts.skipBidding], screen)
 
 
-def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState: dict):
+def renderCards(decks: dict, screen: pygame.Surface, playingStage: bool):
     selectedCard = None
-    for card in reversed(decks["my"].cards):
-        if card.rect.collidepoint(pygame.mouse.get_pos()):
-            selectedCard = card
-            break
+    if playingStage:
+        for card in reversed(decks["my"].cards):
+            if card.rect.collidepoint(pygame.mouse.get_pos()):
+                selectedCard = card
+                break
 
-    for key, deck in decks.items():
+    for deck in decks.values():
         for card in deck.cards:
             if card.visible:
-                if card.playable:
+                if not playingStage:
+                    screen.blit(card.image, card.rect)
+                elif card.playable:
                     if selectedCard and card == selectedCard:
                         screen.blit(card.image, card.rect.move(0, -20))
                     else:
@@ -108,9 +110,10 @@ def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState
             else:
                 screen.blit(card.reverse, card.rect)
 
-    if gameState["winner"] != -1:
+
+def renderAnimations(animations: list, screen: pygame.Surface, gameState: dict):
+    if gameState["winner"] != UNDEFINED:
         if len(animations) == 4 and animations[3].frame == 61:
-            # enumerate the animations list
             for i, animation in enumerate(animations):
                 animation.calculateWinnerVelocities(
                     gameState["myId"], gameState["winner"]
@@ -128,7 +131,7 @@ def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState
         elif animation.frame == 60:
             if animation.destroy:
                 animations.remove(animation)
-                if gameState["champion"] != -1 and len(animations) == 0:
+                if gameState["champion"] != UNDEFINED and len(animations) == 0:
                     gameState["stage"] = GameStage.END.value
             else:
                 animation.xVel = 0
@@ -139,13 +142,22 @@ def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState
         screen.blit(animation.image, animation.rect)
 
 
-def renderCardsDummy(decks: dict, screen: pygame.Surface):
-    for key, deck in decks.items():
-        for card in deck.cards:
-            if card.visible:
-                screen.blit(card.image, card.rect)
-            else:
-                screen.blit(card.reverse, card.rect)
+async def playCard(
+    decks: dict, websocket: websockets.WebSocketClientProtocol, mousePos: tuple
+):
+    for card in reversed(decks["my"].cards):
+        if card.playable and card.rect.collidepoint(mousePos):
+            await sendRequest(
+                websocket,
+                {
+                    "Type": ReqType.PLAYCARD.value,
+                    "Data": {
+                        "suit": card.suit,
+                        "rank": card.rank,
+                    },
+                },
+            )
+            break
 
 
 async def main():
@@ -155,16 +167,7 @@ async def main():
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
-    gameState = {
-        "myId": -1,
-        "currentPlayer": 0,
-        "stage": GameStage.WAITING.value,
-        "bid": 0,
-        "trump": "",
-        "bidder": 0,
-        "winner": -1,
-        "champion": -1,
-    }
+    gameState = getDefaultGameState()
     decks = {}
     animations = []
     texts = GameText()
@@ -180,34 +183,22 @@ async def main():
                 if event.type == pygame.QUIT:
                     return
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
+                    mousePos = pygame.mouse.get_pos()
                     for text, highligtedText, rect in texts.biddingNumbers:
-                        if rect.collidepoint(mouse_pos):
+                        if rect.collidepoint(mousePos):
                             pass
 
                     for text, highligtedText, rect in texts.biddingSuites:
-                        if rect.collidepoint(mouse_pos):
+                        if rect.collidepoint(mousePos):
                             pass
 
                     if gameState["stage"] == GameStage.PLAYING.value:
-                        for card in reversed(decks["my"].cards):
-                            if card.playable and card.rect.collidepoint(mouse_pos):
-                                await sendRequest(
-                                    websocket,
-                                    {
-                                        "Type": ReqType.PLAYCARD.value,
-                                        "Data": {
-                                            "suit": card.suit,
-                                            "rank": card.rank,
-                                        },
-                                    },
-                                )
-                                break
+                        await playCard(decks, websocket, mousePos)
 
                     # temporary
                     if gameState["currentPlayer"] == gameState[
                         "myId"
-                    ] and texts.skipBidding[1].collidepoint(mouse_pos):
+                    ] and texts.skipBidding[2].collidepoint(mousePos):
                         await sendRequest(
                             websocket,
                             {
@@ -224,11 +215,12 @@ async def main():
 
             elif gameState["stage"] == GameStage.BIDDING.value:
                 renderBidding(screen, texts, gameState)
-                renderCardsDummy(decks, screen)
+                renderCards(decks, screen, False)
 
             elif gameState["stage"] == GameStage.PLAYING.value:
                 screen.blit(texts.bidValues[0], texts.bidValues[1])
-                renderCards(decks, screen, animations, gameState)
+                renderCards(decks, screen, True)
+                renderAnimations(animations, screen, gameState)
 
             elif gameState["stage"] == GameStage.END.value:
                 screen.blit(texts.winner[0], texts.winner[1])

@@ -1,1 +1,1 @@
-An online card game
+An online card game implementation with websockets

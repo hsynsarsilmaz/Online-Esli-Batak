@@ -56,8 +56,8 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
                 )
 
             if data["Type"] == ReqType.PLAYCARD.value:
-                winner = -1
-                champion = -1
+                winner = UNDEFINED
+                champion = UNDEFINED
                 turn.playTurn(data["Data"]["suit"], data["Data"]["rank"], myId)
                 if turn.playedCount == 4:
                     winner = turn.winner
@@ -120,8 +120,6 @@ def printPlayers():
 
 async def main():
     dealCards()
-    # test
-    turn.number = 12
     try:
         async with websockets.serve(handleClient, IP, PORT):
             print("Online Eşli Batak Server has started...")

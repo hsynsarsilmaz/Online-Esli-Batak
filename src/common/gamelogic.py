@@ -15,6 +15,7 @@ WIDTH, HEIGHT = 1600, 900
 FPS = 60
 BGCOLOR = (2, 100, 42)
 SUIT_ORDER = {"H": 0, "S": 1, "D": 2, "C": 3}
+UNDEFINED = -1
 
 
 class Deck:
@@ -148,10 +149,10 @@ class Turn:
         self.trump = ""
         self.currentPlayer = 0
         self.playedCount = 0
-        self.winner = -1
+        self.winner = UNDEFINED
 
     def playTurn(self, suit: str, rank: int, player: int):
-        if self.winner == -1:
+        if self.winner == UNDEFINED:
             self.winner = player
         else:
             if suit == self.trump and self.lastSuit != self.trump:
@@ -167,5 +168,18 @@ class Turn:
         self.playedCount = 0
         self.number += 1
         self.currentPlayer = self.winner
-        self.winner = -1
+        self.winner = UNDEFINED
         self.trump = ""
+
+
+def getDefaultGameState() -> dict:
+    return {
+        "myId": UNDEFINED,
+        "currentPlayer": 0,
+        "stage": GameStage.WAITING.value,
+        "bid": 0,
+        "trump": "",
+        "bidder": 0,
+        "winner": UNDEFINED,
+        "champion": UNDEFINED,
+    }

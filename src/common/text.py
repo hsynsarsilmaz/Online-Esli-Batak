@@ -54,13 +54,15 @@ class GameText:
 
         return (text, textRect)
 
+    # temporary
     def createSkipBidding(self) -> tuple:
         font = pygame.font.Font(None, 36)
         text = font.render("Skip Bidding", True, (255, 255, 255))
+        highligtedText = font.render("Skip Bidding", True, (255, 0, 0))
         textRect = text.get_rect()
         textRect.center = (WIDTH // 2, HEIGHT // 2)
 
-        return (text, textRect)
+        return (text, highligtedText, textRect)
 
     def createBidValues(self, bid: int, trump: str):
         font = pygame.font.Font(None, 50)
