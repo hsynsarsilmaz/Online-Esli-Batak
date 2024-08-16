@@ -151,7 +151,7 @@ class Turn:
         self.playedCount = 0
         self.winner = UNDEFINED
 
-    def playTurn(self, suit: str, rank: int, player: int):
+    def play(self, suit: str, rank: int, player: int):
         if self.winner == UNDEFINED:
             self.winner = player
         else:
