@@ -57,6 +57,7 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
 
             if data["Type"] == ReqType.PLAYCARD.value:
                 winner = -1
+                champion = -1
                 turn.playTurn(data["Data"]["suit"], data["Data"]["rank"], myId)
                 if turn.playedCount == 4:
                     winner = turn.winner
@@ -65,27 +66,25 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
                     else:
                         points[1] += 1
                     turn.endTurn()
-                print(turn.number)
-                if turn.number < 13:
-                    await broadcast(
-                        {
-                            "Type": ReqType.PLAYTURN.value,
-                            "Data": {
-                                "suit": turn.lastSuit,
-                                "rank": turn.lastRank,
-                                "currentPlayer": turn.currentPlayer,
-                                "winner": winner,
-                                "isFirstTurn": turn.playedCount == 0,
-                            },
-                        }
-                    )
-                else:
-                    await broadcast(
-                        {
-                            "Type": ReqType.GAMEEND.value,
-                            "Data": {"champion": 0 if points[0] > points[1] else 1},
-                        }
-                    )
+                    if turn.number == 13:
+                        if points[0] > points[1]:
+                            champion = 0
+                        else:
+                            champion = 1
+
+                await broadcast(
+                    {
+                        "Type": ReqType.PLAYTURN.value,
+                        "Data": {
+                            "suit": turn.lastSuit,
+                            "rank": turn.lastRank,
+                            "currentPlayer": turn.currentPlayer,
+                            "winner": winner,
+                            "champion": champion,
+                            "isFirstTurn": turn.playedCount == 0,
+                        },
+                    }
+                )
 
     except websockets.ConnectionClosed:
         print("Client disconnected")
@@ -121,6 +120,8 @@ def printPlayers():
 
 async def main():
     dealCards()
+    # test
+    turn.number = 12
     try:
         async with websockets.serve(handleClient, IP, PORT):
             print("Online Eşli Batak Server has started...")

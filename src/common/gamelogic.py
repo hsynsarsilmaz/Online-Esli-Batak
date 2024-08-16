@@ -34,6 +34,9 @@ class Deck:
         return None
 
     def markPlayableCards(self, isFirst: bool, suit: str, rank: int, trump: str):
+        if len(self.cards) == 0:
+            return
+
         # Every card except trumps can be played in first hand
         if isFirst:
             nonTrumpSuitCount = 0

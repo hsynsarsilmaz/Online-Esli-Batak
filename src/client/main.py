@@ -61,13 +61,12 @@ async def handleServerConnection(
             card.frame = 0
 
             animations.append(card)
-            # if winner is not empty
-            if data["Data"]["winner"] != -1:
-                gameState["winner"] = data["Data"]["winner"]
-
-        elif data["Type"] == ReqType.GAMEEND.value:
+            gameState["winner"] = data["Data"]["winner"]
             gameState["champion"] = data["Data"]["champion"]
-            texts.createWinner(gameState["champion"])
+
+            if gameState["champion"] != -1:
+                gameState["champion"] = data["Data"]["champion"]
+                texts.createWinner(gameState["champion"])
 
 
 def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
@@ -129,7 +128,7 @@ def renderCards(decks: dict, screen: pygame.Surface, animations: list, gameState
         elif animation.frame == 60:
             if animation.destroy:
                 animations.remove(animation)
-                if len(animations) == 0:
+                if gameState["champion"] != -1 and len(animations) == 0:
                     gameState["stage"] = GameStage.END.value
             else:
                 animation.xVel = 0
