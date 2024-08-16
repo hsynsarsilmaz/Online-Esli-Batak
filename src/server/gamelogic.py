@@ -1,14 +1,40 @@
-import pygame
-import asyncio
-import websockets
 import random
 
-from ..common.networking import *
-from ..common.card import *
-from ..common.gamelogic import *
-from ..common.text import *
+from ..common.common import *
+from ..client.text import *
 
 from .networking import *
+
+
+class Turn:
+    def __init__(self):
+        self.number = 0
+        self.lastSuit = ""
+        self.lastRank = 0
+        self.trump = ""
+        self.currentPlayer = 0
+        self.playedCount = 0
+        self.winner = UNDEFINED
+
+    def play(self, suit: str, rank: int, player: int):
+        if self.winner == UNDEFINED:
+            self.winner = player
+        else:
+            if suit == self.trump and self.lastSuit != self.trump:
+                self.winner = player
+            elif suit == self.lastSuit and rank > self.lastRank:
+                self.winner = player
+        self.lastSuit = suit
+        self.lastRank = rank
+        self.currentPlayer = (player + 1) % 4
+        self.playedCount += 1
+
+    def endTurn(self):
+        self.playedCount = 0
+        self.number += 1
+        self.currentPlayer = self.winner
+        self.winner = UNDEFINED
+        self.trump = ""
 
 
 def dealCards(cards: list):

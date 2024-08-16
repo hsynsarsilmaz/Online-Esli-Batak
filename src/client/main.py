@@ -2,14 +2,15 @@ import pygame
 import asyncio
 import websockets
 
-from ..common.networking import *
-from ..common.card import *
-from ..common.gamelogic import *
-from ..common.text import *
+from ..common.common import *
 
+from .text import *
 from .networking import *
 from .rendering import *
 from .events import *
+from .gamelogic import *
+from .card import *
+
 
 async def main():
 
@@ -57,6 +58,7 @@ async def main():
             await asyncio.sleep(0)
 
         await websocket.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

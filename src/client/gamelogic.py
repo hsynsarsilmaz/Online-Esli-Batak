@@ -1,6 +1,13 @@
-import enum
+from ..common.common import *
 
-from ..common.card import *
+from .text import *
+from .networking import *
+from .rendering import *
+from .events import *
+from .card import *
+
+
+SUIT_ORDER = {"H": 0, "S": 1, "D": 2, "C": 3}
 
 
 class GameStage(enum.Enum):
@@ -8,14 +15,6 @@ class GameStage(enum.Enum):
     BIDDING = 1
     PLAYING = 2
     END = 3
-
-
-# Constants
-WIDTH, HEIGHT = 1600, 900
-FPS = 60
-BGCOLOR = (2, 100, 42)
-SUIT_ORDER = {"H": 0, "S": 1, "D": 2, "C": 3}
-UNDEFINED = -1
 
 
 class Deck:
@@ -139,37 +138,6 @@ def rePositionCards(decks: dict):
         elif key == "right":
             for i, card in enumerate(deck.cards):
                 card.rect.topleft = (1350, 88 + i * 50)
-
-
-class Turn:
-    def __init__(self):
-        self.number = 0
-        self.lastSuit = ""
-        self.lastRank = 0
-        self.trump = ""
-        self.currentPlayer = 0
-        self.playedCount = 0
-        self.winner = UNDEFINED
-
-    def play(self, suit: str, rank: int, player: int):
-        if self.winner == UNDEFINED:
-            self.winner = player
-        else:
-            if suit == self.trump and self.lastSuit != self.trump:
-                self.winner = player
-            elif suit == self.lastSuit and rank > self.lastRank:
-                self.winner = player
-        self.lastSuit = suit
-        self.lastRank = rank
-        self.currentPlayer = (player + 1) % 4
-        self.playedCount += 1
-
-    def endTurn(self):
-        self.playedCount = 0
-        self.number += 1
-        self.currentPlayer = self.winner
-        self.winner = UNDEFINED
-        self.trump = ""
 
 
 def getDefaultGameState() -> dict:

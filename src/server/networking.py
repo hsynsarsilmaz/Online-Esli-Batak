@@ -1,17 +1,12 @@
-import asyncio
 import websockets
-import sys
-import random
-
-from ..common.networking import *
-from ..common.card import *
-from ..common.gamelogic import *
+import json
+from ..common.common import *
 
 
 async def broadcast(request: dict, connectedClients: list):
     for player in connectedClients:
         if player != None:
-            await sendRequest(player, request)
+            await player.send(json.dumps(request))
 
 
 def printPlayers(connectedClients: list):
@@ -31,7 +26,7 @@ async def connectClient(
     connectedClients.append(websocket)
     printPlayers(connectedClients)
 
-    await sendRequest(websocket, {"Type": ReqType.CONNECT.value, "Data": myId})
+    await websocket.send(json.dumps({"Type": ReqType.CONNECT.value, "Data": myId}))
 
     if myId == 3:
         print("All players connected, starting game...")

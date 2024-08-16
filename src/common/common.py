@@ -1,6 +1,10 @@
 import enum
-import json
-import websockets
+
+# Constants
+WIDTH, HEIGHT = 1600, 900
+FPS = 60
+BGCOLOR = (2, 100, 42)
+UNDEFINED = -1
 
 IP = "localhost"
 PORT = 7777
@@ -15,7 +19,3 @@ class ReqType(enum.Enum):
     GAMESTART = 4
     PLAYCARD = 5
     PLAYTURN = 6
-
-
-async def sendRequest(websocket: websockets.WebSocketClientProtocol, request: dict):
-    await websocket.send(json.dumps(request))

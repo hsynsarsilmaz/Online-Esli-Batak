@@ -1,13 +1,12 @@
 import pygame
 import websockets
+import json
 
-from ..common.networking import *
-from ..common.card import *
-from ..common.gamelogic import *
-from ..common.text import *
+from ..common.common import *
 
-from .networking import *
+from .text import *
 from .rendering import *
+from .card import *
 
 
 async def handleEvents(
@@ -17,6 +16,9 @@ async def handleEvents(
     texts: GameText,
     websocket: websockets.WebSocketClientProtocol,
 ):
+    from .networking import playCard
+    from .gamelogic import GameStage
+
     if event.type == pygame.QUIT:
         return True
 
@@ -37,12 +39,13 @@ async def handleEvents(
         if gameState["currentPlayer"] == gameState["myId"] and texts.skipBidding[
             2
         ].collidepoint(mousePos):
-            await sendRequest(
-                websocket,
-                {
-                    "Type": ReqType.BIDSKIP.value,
-                    "Data": {"bid": 7, "trump": "S"},
-                },
+            await websocket.send(
+                json.dumps(
+                    {
+                        "Type": ReqType.BIDSKIP.value,
+                        "Data": {"bid": 7, "trump": "S"},
+                    }
+                )
             )
 
     return False

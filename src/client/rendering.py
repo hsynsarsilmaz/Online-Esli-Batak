@@ -1,11 +1,10 @@
 import pygame
 
-from ..common.networking import *
-from ..common.card import *
-from ..common.gamelogic import *
-from ..common.text import *
+from ..common.common import *
 
+from .text import *
 from .networking import *
+from .card import *
 
 
 def renderText(items: list, screen: pygame.Surface):

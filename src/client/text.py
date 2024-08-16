@@ -1,5 +1,5 @@
 import pygame
-from .gamelogic import WIDTH, HEIGHT
+from ..common.common import WIDTH, HEIGHT
 
 TEXT_COLOR = (200, 200, 200)
 TEXT_HIGHLIGHT_COLOR = (200, 0, 0)

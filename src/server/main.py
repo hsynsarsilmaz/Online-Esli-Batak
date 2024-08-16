@@ -1,10 +1,8 @@
 import asyncio
 import websockets
 import sys
-
-from ..common.networking import *
-from ..common.card import *
-from ..common.gamelogic import *
+import json
+from ..common.common import *
 
 from .networking import *
 from .gamelogic import *

@@ -1,10 +1,11 @@
 import websockets
 import json
 
-from ..common.networking import *
-from ..common.card import *
-from ..common.gamelogic import *
-from ..common.text import *
+from ..common.common import *
+
+from .text import *
+from .gamelogic import *
+from .card import *
 
 
 async def handleServerConnection(
@@ -72,14 +73,15 @@ async def playCard(
 ):
     for card in reversed(decks["my"].cards):
         if card.playable and card.rect.collidepoint(mousePos):
-            await sendRequest(
-                websocket,
-                {
-                    "Type": ReqType.PLAYCARD.value,
-                    "Data": {
-                        "suit": card.suit,
-                        "rank": card.rank,
-                    },
-                },
+            await websocket.send(
+                json.dumps(
+                    {
+                        "Type": ReqType.PLAYCARD.value,
+                        "Data": {
+                            "suit": card.suit,
+                            "rank": card.rank,
+                        },
+                    }
+                )
             )
             break
