@@ -1,11 +1,5 @@
-from ..common.common import *
-
-from .text import *
-from .networking import *
-from .rendering import *
-from .events import *
 from .card import *
-
+from src.common.common import *
 
 SUIT_ORDER = {"H": 0, "S": 1, "D": 2, "C": 3}
 

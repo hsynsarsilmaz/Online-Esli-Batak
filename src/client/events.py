@@ -2,11 +2,9 @@ import pygame
 import websockets
 import json
 
-from ..common.common import *
-
 from .text import *
-from .rendering import *
-from .card import *
+from .gamelogic import *
+from .networking import *
 
 
 async def handleEvents(
@@ -16,8 +14,6 @@ async def handleEvents(
     texts: GameText,
     websocket: websockets.WebSocketClientProtocol,
 ):
-    from .networking import playCard
-    from .gamelogic import GameStage
 
     if event.type == pygame.QUIT:
         return True

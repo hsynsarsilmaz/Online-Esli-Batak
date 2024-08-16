@@ -1,11 +1,8 @@
 import websockets
 import json
 
-from ..common.common import *
-
 from .text import *
 from .gamelogic import *
-from .card import *
 
 
 async def handleServerConnection(

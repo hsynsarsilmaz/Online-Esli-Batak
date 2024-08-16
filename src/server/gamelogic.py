@@ -1,8 +1,6 @@
 import random
 
 from ..common.common import *
-from ..client.text import *
-
 from .networking import *
 
 
