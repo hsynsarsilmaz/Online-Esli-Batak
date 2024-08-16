@@ -1,4 +1,8 @@
 import pygame
+import os
+import sys
+
+from src.common.common import BUILD
 
 CARD_WIDTH, CARD_HEIGHT = 125, 182
 WIDTH, HEIGHT = 1600, 900
@@ -47,11 +51,17 @@ class Card:
 
 
 def loadCardReverseImages():
-    cardReverseVertical = pygame.image.load("res/img/cards/RV.png").convert_alpha()
+    relativePath = "res/img/cards/RV.png"
+    path = resourcePath(relativePath)
+    cardReverseVertical = pygame.image.load(
+        path if BUILD else relativePath
+    ).convert_alpha()
     cardReverseVertical = pygame.transform.scale(
         cardReverseVertical, (CARD_WIDTH, CARD_HEIGHT)
     )
-    cardReverseHorizontal = pygame.image.load("res/img/cards/RV.png").convert_alpha()
+    cardReverseHorizontal = pygame.image.load(
+        path if BUILD else relativePath
+    ).convert_alpha()
     cardReverseHorizontal = pygame.transform.scale(
         cardReverseHorizontal, (CARD_WIDTH, CARD_HEIGHT)
     )
@@ -60,8 +70,19 @@ def loadCardReverseImages():
     return cardReverseVertical, cardReverseHorizontal
 
 
+def resourcePath(relativePath):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relativePath)
+
+
 def loadCardImages(SuitsAndRanks, cards):
     for suit, rank in SuitsAndRanks:
-        image = pygame.image.load(f"res/img/cards/{rank}{suit}.png").convert_alpha()
+        relativePath = f"res/img/cards/{suit}{rank}.png"
+        path = resourcePath(relativePath)
+        image = pygame.image.load(path if BUILD else relativePath).convert_alpha()
         image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
         cards.append(Card(suit, rank, image))

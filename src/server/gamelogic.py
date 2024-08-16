@@ -1,7 +1,7 @@
 import random
 
-from ..common.common import *
-from .networking import *
+from src.common.common import *
+from src.server.networking import *
 
 
 class Turn:

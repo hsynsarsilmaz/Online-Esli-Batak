@@ -1,8 +1,8 @@
 import websockets
 import json
 
-from .text import *
-from .gamelogic import *
+from src.client.text import *
+from src.client.gamelogic import *
 
 
 async def handleServerConnection(

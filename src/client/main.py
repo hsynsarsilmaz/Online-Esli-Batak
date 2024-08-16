@@ -2,14 +2,14 @@ import pygame
 import asyncio
 import websockets
 
-from ..common.common import *
+from src.common.common import *
 
-from .text import *
-from .networking import *
-from .rendering import *
-from .events import *
-from .gamelogic import *
-from .card import *
+from src.client.text import *
+from src.client.networking import *
+from src.client.rendering import *
+from src.client.events import *
+from src.client.gamelogic import *
+from src.client.card import *
 
 
 async def main():

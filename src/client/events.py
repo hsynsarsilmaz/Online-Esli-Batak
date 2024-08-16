@@ -2,9 +2,9 @@ import pygame
 import websockets
 import json
 
-from .text import *
-from .gamelogic import *
-from .networking import *
+from src.client.text import *
+from src.client.gamelogic import *
+from src.client.networking import *
 
 
 async def handleEvents(

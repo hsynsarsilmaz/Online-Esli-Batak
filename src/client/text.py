@@ -1,5 +1,5 @@
 import pygame
-from ..common.common import *
+from src.common.common import *
 
 TEXT_COLOR = (200, 200, 200)
 TEXT_HIGHLIGHT_COLOR = (200, 0, 0)

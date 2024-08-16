@@ -1,7 +1,7 @@
 import pygame
 
-from .text import *
-from .gamelogic import *
+from src.client.text import *
+from src.client.gamelogic import *
 
 
 def renderText(items: list, screen: pygame.Surface):

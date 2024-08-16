@@ -2,10 +2,10 @@ import asyncio
 import websockets
 import sys
 import json
-from ..common.common import *
+from src.common.common import *
 
-from .networking import *
-from .gamelogic import *
+from src.server.networking import *
+from src.server.gamelogic import *
 
 connectedClients = []
 turn = Turn()

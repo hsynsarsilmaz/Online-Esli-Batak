@@ -1,7 +1,7 @@
 import websockets
 import json
 
-from ..common.common import *
+from src.common.common import *
 
 
 async def broadcast(request: dict, connectedClients: list):
