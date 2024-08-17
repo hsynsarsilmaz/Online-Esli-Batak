@@ -81,7 +81,7 @@ def resourcePath(relativePath):
 
 def loadCardImages(SuitsAndRanks, cards):
     for suit, rank in SuitsAndRanks:
-        relativePath = f"res/img/cards/{suit}{rank}.png"
+        relativePath = f"res/img/cards/{rank}{suit}.png"
         path = resourcePath(relativePath)
         image = pygame.image.load(path if BUILD else relativePath).convert_alpha()
         image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
