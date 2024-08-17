@@ -57,7 +57,9 @@ async def main():
             pygame.display.flip()
             await asyncio.sleep(0)
 
+        message_handler.cancel()
         await websocket.close()
+        pygame.quit()
 
 
 if __name__ == "__main__":
