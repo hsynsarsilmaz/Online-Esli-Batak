@@ -27,38 +27,38 @@ class Deck:
                 return card
         return None
 
-    def markPlayableCards(self, isFirst: bool, suit: str, rank: int, trump: str):
-        if len(self.cards) == 0:
-            return
-
-        # Every card except trumps can be played in first hand
+    def firstCard(self, trump: str, isFirst: bool, isTrumpPlayed: bool):
+        # Until a player is obligated to play trump card, trump card can't be played as the first card
+        # After a player played trump card, every card can be played as first card
         if isFirst:
-            nonTrumpSuitCount = 0
-            for card in self.cards:
-                if card.suit != trump:
-                    nonTrumpSuitCount += 1
-            if nonTrumpSuitCount > 0:
-                for card in self.cards:
-                    if card.suit != trump:
-                        card.playable = True
-            else:
+            if isTrumpPlayed:
                 for card in self.cards:
                     card.playable = True
-            return
+            else:
+                nonTrumpSuitCount = 0
+                for card in self.cards:
+                    if card.suit != trump:
+                        nonTrumpSuitCount += 1
+                if nonTrumpSuitCount > 0:
+                    for card in self.cards:
+                        if card.suit != trump:
+                            card.playable = True
+                else:
+                    for card in self.cards:
+                        card.playable = True
 
-        playableCards = []
-
-        # If the player has higher cards of the same suit, they must be played
+    def sameSuitCards(self, suit: str, biggestRank: int, playableCards: list) -> bool:
+        # If the player has a card that greater than biggest played card, they must play it
         for card in self.cards:
-            if card.suit == suit and card.rank > rank:
+            if card.suit == suit and card.rank > biggestRank:
                 playableCards.append(card)
 
         if len(playableCards) > 0:
             for playableCard in playableCards:
                 playableCard.playable = True
-            return
+            return True
 
-        # If the player doesn't have higher cards of the same suit, they can play a lesser card of the same suit
+        # If the player doesn't have a card that greater than biggest played card, they can play any card of the same suit
         for card in self.cards:
             if card.suit == suit:
                 playableCards.append(card)
@@ -66,9 +66,12 @@ class Deck:
         if len(playableCards) > 0:
             for playableCard in playableCards:
                 playableCard.playable = True
-            return
+            return True
 
-        # If the player doesn't have any cards of the same suit, they can play any trump card
+        return False
+
+    def trumpCards(self, trump: str, playableCards: list) -> bool:
+        # If the player doesn't have any cards of the same suit, they can play a trump card
         # This will effectively change the suit to trump
         for card in self.cards:
             if card.suit == trump:
@@ -77,6 +80,30 @@ class Deck:
         if len(playableCards) > 0:
             for playableCard in playableCards:
                 playableCard.playable = True
+            return True
+
+    def markPlayableCards(
+        self,
+        isFirst: bool,
+        suit: str,
+        biggestRank: int,
+        trump: str,
+        isTrumpPlayed: bool,
+    ):
+        if len(self.cards) == 0:
+            return
+
+        if isFirst:
+            self.firstCard(trump, isFirst, isTrumpPlayed)
+            return
+
+        playableCards = []
+
+        if self.sameSuitCards(suit, biggestRank, playableCards):
+            return
+
+        # This case is only when last card is not trump and the player has trump cards
+        if suit != trump and self.trumpCards(trump, playableCards):
             return
 
         # If the player doesn't have any cards of interest they can play any card without effect

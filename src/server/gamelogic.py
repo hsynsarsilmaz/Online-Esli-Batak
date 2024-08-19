@@ -3,13 +3,17 @@ import random
 from src.common.common import *
 from src.server.networking import *
 
+TBD = ""
+
 
 class Turn:
     def __init__(self):
         self.number = 0
-        self.lastSuit = ""
+        self.lastSuit = TBD
         self.lastRank = 0
-        self.trump = ""
+        self.biggestRank = 0
+        self.trump = TBD
+        self.isTrumpPlayed = False
         self.currentPlayer = 0
         self.playedCount = 0
         self.winner = UNDEFINED
@@ -17,11 +21,17 @@ class Turn:
     def play(self, suit: str, rank: int, player: int):
         if self.winner == UNDEFINED:
             self.winner = player
+            self.biggestRank = rank
         else:
             if suit == self.trump and self.lastSuit != self.trump:
                 self.winner = player
-            elif suit == self.lastSuit and rank > self.lastRank:
+                self.lastSuit = self.trump
+                self.isTrumpPlayed = True
+                self.biggestRank = rank
+            elif suit == self.lastSuit and rank > self.biggestRank:
                 self.winner = player
+                self.biggestRank = rank
+
         self.lastSuit = suit
         self.lastRank = rank
         self.currentPlayer = (player + 1) % 4
@@ -32,7 +42,8 @@ class Turn:
         self.number += 1
         self.currentPlayer = self.winner
         self.winner = UNDEFINED
-        self.trump = ""
+        self.trump = TBD
+        self.biggestRank = 0
 
 
 def dealCards(cards: list):
@@ -85,6 +96,8 @@ async def playTurn(
             "Data": {
                 "suit": turn.lastSuit,
                 "rank": turn.lastRank,
+                "biggestRank": turn.biggestRank,
+                "isTrumpPlayed": turn.isTrumpPlayed,
                 "currentPlayer": turn.currentPlayer,
                 "winner": winner,
                 "champion": champion,
