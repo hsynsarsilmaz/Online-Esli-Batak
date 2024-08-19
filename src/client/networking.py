@@ -10,7 +10,7 @@ async def handleServerConnection(
     decks: dict,
     gameState: dict,
     texts: GameText,
-    animations: list,
+    cardPlayAnimations: list,
 ):
     async for message in websocket:
         data = json.loads(message)
@@ -59,8 +59,10 @@ async def handleServerConnection(
             card.xVel = (WIDTH // 2 - card.rect.center[0]) / 60
             card.yVel = (HEIGHT // 2 - card.rect.center[1]) / 60
             card.frame = 0
+            card.rect = card.image.get_rect(center=card.rect.center)
 
-            animations.append(card)
+            cardPlayAnimations.append(card)
+
             gameState["winner"] = data["Data"]["winner"]
             gameState["champion"] = data["Data"]["champion"]
 

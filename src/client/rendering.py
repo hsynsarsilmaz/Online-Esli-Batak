@@ -46,17 +46,37 @@ def renderCards(decks: dict, screen: pygame.Surface, playingStage: bool):
                 screen.blit(card.reverse, card.rect)
 
 
-def renderAnimations(animations: list, screen: pygame.Surface, gameState: dict):
-    if gameState["winner"] != UNDEFINED:
-        if len(animations) == 4 and animations[3].frame == 61:
-            for i, animation in enumerate(animations):
-                animation.calculateWinnerVelocities(
-                    gameState["myId"], gameState["winner"]
-                )
-                animation.frame = -15 * i
-                animation.destroy = True
+def renderCardPlayAnimations(
+    playAnimations: list,
+    destroyAnimations: list,
+    screen: pygame.Surface,
+    gameState: dict,
+):
+    for animation in playAnimations:
+        if animation.frame < 60:
+            animation.rect.x += animation.xVel
+            animation.rect.y += animation.yVel
+            animation.frame += 1
+        elif animation.frame == 60:
+            animation.rect.center = (WIDTH // 2, HEIGHT // 2)
+            animation.frame += 1
 
-    for animation in animations:
+        screen.blit(animation.image, animation.rect)
+
+    if len(playAnimations) == 4 and playAnimations[3].frame == 61:
+        for i, animation in enumerate(playAnimations):
+            animation.calculateWinnerVelocities(gameState["myId"], gameState["winner"])
+            animation.frame = -15 * i
+            destroyAnimations.append(animation)
+
+        playAnimations.clear()
+
+
+def renderCardDestroyAnimations(
+    destroyAnimations: list, screen: pygame.Surface, gameState: dict
+):
+
+    for animation in destroyAnimations:
         if animation.frame < 0:
             animation.frame += 1
         elif animation.frame < 60:
@@ -64,14 +84,11 @@ def renderAnimations(animations: list, screen: pygame.Surface, gameState: dict):
             animation.rect.y += animation.yVel
             animation.frame += 1
         elif animation.frame == 60:
-            if animation.destroy:
-                animations.remove(animation)
-                if gameState["champion"] != UNDEFINED and len(animations) == 0:
-                    gameState["stage"] = GameStage.END.value
-            else:
-                animation.xVel = 0
-                animation.yVel = 0
-                animation.rect.center = (WIDTH // 2, HEIGHT // 2)
-                animation.frame += 1
+            animation.frame += 1
+            if gameState["champion"] != UNDEFINED and len(destroyAnimations) == 0:
+                gameState["stage"] = GameStage.END.value
 
         screen.blit(animation.image, animation.rect)
+
+    if len(destroyAnimations) == 4 and destroyAnimations[3].frame == 61:
+        destroyAnimations.clear()

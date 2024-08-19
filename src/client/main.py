@@ -21,14 +21,17 @@ async def main():
     clock = pygame.time.Clock()
     gameState = getDefaultGameState()
     decks = {}
-    animations = []
+    cardPlayAnimations = []
+    cardDestoryAnimations = []
     texts = GameText()
     running = True
 
     async with websockets.connect(URI) as websocket:
 
         message_handler = asyncio.create_task(
-            handleServerConnection(websocket, decks, gameState, texts, animations)
+            handleServerConnection(
+                websocket, decks, gameState, texts, cardPlayAnimations
+            )
         )
 
         while running:
@@ -49,7 +52,10 @@ async def main():
             elif gameState["stage"] == GameStage.PLAYING.value:
                 screen.blit(texts.bidValues[0], texts.bidValues[1])
                 renderCards(decks, screen, True)
-                renderAnimations(animations, screen, gameState)
+                renderCardPlayAnimations(
+                    cardPlayAnimations, cardDestoryAnimations, screen, gameState
+                )
+                renderCardDestroyAnimations(cardDestoryAnimations, screen, gameState)
 
             elif gameState["stage"] == GameStage.END.value:
                 screen.blit(texts.winner[0], texts.winner[1])

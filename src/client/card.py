@@ -23,7 +23,6 @@ class Card:
         self.frame = 0
         self.playable = False
         self.rect = None
-        self.destroy = False
 
     def createGrayImage(self):
         grayImage = pygame.Surface(self.image.get_size(), flags=pygame.SRCALPHA)
