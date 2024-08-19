@@ -14,9 +14,44 @@ class GameStage(enum.Enum):
 class Deck:
     def __init__(self):
         self.cards = []
+        self.initPos = 0
+        self.interval = 0
+        self.fixedPos = 0
 
     def createDeck(self, cards: list):
         self.cards = cards
+
+    def initialPositions(self, key: str):
+        hInverval = 70
+        vInterval = 50
+        hInitPos = 317
+        vInitPos = 88
+
+        if key == "my":
+            self.initPos = hInitPos
+            self.interval = hInverval
+            self.fixedPos = 709
+            for card in self.cards:
+                card.rect = card.image.get_rect()
+        elif key == "left":
+            self.initPos = vInitPos
+            self.interval = vInterval
+            self.fixedPos = 191
+            for card in self.cards:
+                card.rect = card.reverse.get_rect()
+        elif key == "mate":
+            self.initPos = hInitPos
+            self.interval = hInverval
+            self.fixedPos = 50
+            for card in self.cards:
+                card.rect = card.reverse.get_rect()
+
+        elif key == "right":
+            self.initPos = vInitPos
+            self.interval = vInterval
+            self.fixedPos = 1350
+            for card in self.cards:
+                card.rect = card.reverse.get_rect()
 
     def sortDeck(self):
         self.cards.sort(key=lambda x: (SUIT_ORDER[x.suit], x.rank))
@@ -161,23 +196,31 @@ def dealCards(cards: list, decks: dict, myId: int):
     for deck in decks.values():
         deck.sortDeck()
 
+    decks["my"].initialPositions("my")
+    decks["left"].initialPositions("left")
+    decks["mate"].initialPositions("mate")
+    decks["right"].initialPositions("right")
     rePositionCards(decks)
-
 
 def rePositionCards(decks: dict):
     for key, deck in decks.items():
+
         if key == "my":
             for i, card in enumerate(deck.cards):
-                card.rect.topleft = (317 + i * 70, 668)
+                print(card.rect)
+                card.rect.center = (deck.initPos + i * deck.interval, deck.fixedPos)
         elif key == "left":
             for i, card in enumerate(deck.cards):
-                card.rect.topleft = (68, 88 + i * 50)
+                print(card.rect)
+                card.rect.center = (deck.fixedPos, deck.initPos + i * deck.interval)
         elif key == "mate":
             for i, card in enumerate(deck.cards):
-                card.rect.topleft = (317 + i * 70, 50)
+                print(card.rect)
+                card.rect.center = (deck.initPos + i * deck.interval, deck.fixedPos)
         elif key == "right":
             for i, card in enumerate(deck.cards):
-                card.rect.topleft = (1350, 88 + i * 50)
+                print(card.rect)
+                card.rect.center = (deck.fixedPos, deck.initPos + i * deck.interval)
 
 
 def getDefaultGameState() -> dict:

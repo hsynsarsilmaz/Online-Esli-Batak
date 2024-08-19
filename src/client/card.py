@@ -22,7 +22,7 @@ class Card:
         self.yVel = 0
         self.frame = 0
         self.playable = False
-        self.rect = self.image.get_rect()
+        self.rect = None
         self.destroy = False
 
     def createGrayImage(self):
