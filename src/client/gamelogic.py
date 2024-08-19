@@ -27,6 +27,14 @@ class Deck:
                 return card
         return None
 
+    def checkPlayable(self, playableCards: list) -> bool:
+        if len(playableCards) > 0:
+            for playableCard in playableCards:
+                playableCard.playable = True
+            return True
+
+        return False
+
     def firstCard(self, trump: str, isFirst: bool, isTrumpPlayed: bool):
         # Until a player is obligated to play trump card, trump card can't be played as the first card
         # After a player played trump card, every card can be played as first card
@@ -47,15 +55,29 @@ class Deck:
                     for card in self.cards:
                         card.playable = True
 
-    def sameSuitCards(self, suit: str, biggestRank: int, playableCards: list) -> bool:
+    def sameSuitCards(
+        self,
+        suit: str,
+        trump: str,
+        biggestRank: int,
+        playableCards: list,
+        originalSuit: str,
+    ) -> bool:
+        # If the suit of the game changed to trump but player has a card of the original suit, they must play it
+        if suit == trump:
+            for card in self.cards:
+                if card.suit == originalSuit:
+                    playableCards.append(card)
+
+        if self.checkPlayable(playableCards):
+            return True
+
         # If the player has a card that greater than biggest played card, they must play it
         for card in self.cards:
             if card.suit == suit and card.rank > biggestRank:
                 playableCards.append(card)
 
-        if len(playableCards) > 0:
-            for playableCard in playableCards:
-                playableCard.playable = True
+        if self.checkPlayable(playableCards):
             return True
 
         # If the player doesn't have a card that greater than biggest played card, they can play any card of the same suit
@@ -63,23 +85,19 @@ class Deck:
             if card.suit == suit:
                 playableCards.append(card)
 
-        if len(playableCards) > 0:
-            for playableCard in playableCards:
-                playableCard.playable = True
+        if self.checkPlayable(playableCards):
             return True
 
         return False
 
-    def trumpCards(self, trump: str, playableCards: list) -> bool:
+    def obligatedTrump(self, trump: str, playableCards: list) -> bool:
         # If the player doesn't have any cards of the same suit, they can play a trump card
         # This will effectively change the suit to trump
         for card in self.cards:
             if card.suit == trump:
                 playableCards.append(card)
 
-        if len(playableCards) > 0:
-            for playableCard in playableCards:
-                playableCard.playable = True
+        if self.checkPlayable(playableCards):
             return True
 
     def markPlayableCards(
@@ -89,6 +107,7 @@ class Deck:
         biggestRank: int,
         trump: str,
         isTrumpPlayed: bool,
+        originalSuit: str,
     ):
         if len(self.cards) == 0:
             return
@@ -99,11 +118,11 @@ class Deck:
 
         playableCards = []
 
-        if self.sameSuitCards(suit, biggestRank, playableCards):
+        if self.sameSuitCards(suit, trump, biggestRank, playableCards, originalSuit):
             return
 
         # This case is only when last card is not trump and the player has trump cards
-        if suit != trump and self.trumpCards(trump, playableCards):
+        if suit != trump and self.obligatedTrump(trump, playableCards):
             return
 
         # If the player doesn't have any cards of interest they can play any card without effect

@@ -9,7 +9,8 @@ TBD = ""
 class Turn:
     def __init__(self):
         self.number = 0
-        self.lastSuit = TBD
+        self.originalSuit = TBD
+        self.turnSuit = TBD
         self.lastRank = 0
         self.biggestRank = 0
         self.trump = TBD
@@ -20,19 +21,24 @@ class Turn:
 
     def play(self, suit: str, rank: int, player: int):
         if self.winner == UNDEFINED:
+            # print(f"First card played by player {player + 1}")
             self.winner = player
             self.biggestRank = rank
+            self.originalSuit = suit
+            self.turnSuit = suit
         else:
-            if suit == self.trump and self.lastSuit != self.trump:
+            # print(
+            #     f"Player {player + 1} played {rank} of {suit}, trump is {self.trump}, last suit is {self.turnSuit}"
+            # )
+            if suit == self.trump and self.turnSuit != self.trump:
                 self.winner = player
-                self.lastSuit = self.trump
+                self.turnSuit = self.trump
                 self.isTrumpPlayed = True
                 self.biggestRank = rank
-            elif suit == self.lastSuit and rank > self.biggestRank:
+            elif suit == self.turnSuit and rank > self.biggestRank:
                 self.winner = player
                 self.biggestRank = rank
 
-        self.lastSuit = suit
         self.lastRank = rank
         self.currentPlayer = (player + 1) % 4
         self.playedCount += 1
@@ -42,8 +48,6 @@ class Turn:
         self.number += 1
         self.currentPlayer = self.winner
         self.winner = UNDEFINED
-        self.trump = TBD
-        self.biggestRank = 0
 
 
 def dealCards(cards: list):
@@ -94,9 +98,10 @@ async def playTurn(
         {
             "Type": ReqType.PLAYTURN.value,
             "Data": {
-                "suit": turn.lastSuit,
+                "suit": turn.turnSuit,
                 "rank": turn.lastRank,
                 "biggestRank": turn.biggestRank,
+                "originalSuit": turn.originalSuit,
                 "isTrumpPlayed": turn.isTrumpPlayed,
                 "currentPlayer": turn.currentPlayer,
                 "winner": winner,

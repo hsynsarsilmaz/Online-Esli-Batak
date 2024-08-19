@@ -30,7 +30,9 @@ async def handleServerConnection(
             gameState["bidder"] = data["Data"]["bidder"]
             gameState["stage"] = GameStage.PLAYING.value
             if gameState["myId"] == gameState["currentPlayer"]:
-                decks["my"].markPlayableCards(True, "", 0, gameState["trump"], False)
+                decks["my"].markPlayableCards(
+                    True, "", 0, gameState["trump"], False, ""
+                )
 
             texts.createBidValues(gameState["bid"], gameState["trump"])
 
@@ -45,6 +47,7 @@ async def handleServerConnection(
                     data["Data"]["biggestRank"],
                     gameState["trump"],
                     data["Data"]["isTrumpPlayed"],
+                    data["Data"]["originalSuit"],
                 )
             card = None
             for key, deck in decks.items():
