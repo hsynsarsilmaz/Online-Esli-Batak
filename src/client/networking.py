@@ -68,6 +68,8 @@ async def handleServerConnection(
                 gameState["champion"] = data["Data"]["champion"]
                 texts.createWinner(gameState["champion"])
 
+            rePositionCards(decks)
+
 
 async def playCard(
     decks: dict, websocket: websockets.WebSocketClientProtocol, mousePos: tuple
