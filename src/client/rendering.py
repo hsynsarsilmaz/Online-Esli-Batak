@@ -63,13 +63,14 @@ def renderCardPlayAnimations(
 
         screen.blit(animation.image, animation.rect)
 
-    if len(playAnimations) == 4 and playAnimations[3].frame == 61:
-        for i, animation in enumerate(playAnimations):
-            animation.calculateWinnerVelocities(gameState["myId"], gameState["winner"])
-            animation.frame = -15 * i
-            destroyAnimations.append(animation)
-
-        playAnimations.clear()
+    if len(playAnimations) >= 4 and playAnimations[3].frame == 61:
+        for i in range(4):
+            playAnimations[0].calculateWinnerVelocities(
+                gameState["myId"], gameState["winner"]
+            )
+            playAnimations[0].frame = -15 * i
+            destroyAnimations.append(playAnimations[0])
+            playAnimations.pop(0)
 
 
 def renderCardDestroyAnimations(
