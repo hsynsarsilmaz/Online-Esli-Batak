@@ -1,4 +1,6 @@
 import enum
+import sys
+import os
 
 # Constants
 WIDTH, HEIGHT = 1600, 900
@@ -19,3 +21,12 @@ class ReqType(enum.Enum):
     GAMESTART = 4
     PLAYCARD = 5
     PLAYTURN = 6
+
+
+def resourcePath(relativePath):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relativePath)

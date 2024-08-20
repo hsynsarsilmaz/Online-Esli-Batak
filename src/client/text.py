@@ -9,7 +9,6 @@ class GameText:
     def __init__(self):
         self.waitingForPlayers = self.createWaitingForPlayers()
         self.biddingNumbers = self.createBiddingNumbers()
-        self.biddingSuites = self.createBiddingSuites()
         self.bidValues = []
         # Temporary
         self.skipBidding = self.createSkipBidding()
@@ -20,12 +19,12 @@ class GameText:
         font = pygame.font.Font(None, 80)
 
         positions = [
-            (400, 300),  # 8
-            (475, 300),  # 9
-            (550, 300),  # 10
-            (437, 380),  # 11
-            (512, 380),  # 12
-            (475, 460),  # 13
+            (400, 300),
+            (475, 300),
+            (550, 300),
+            (437, 380),
+            (512, 380),
+            (475, 460),
         ]
 
         for i in range(8, 14):
@@ -35,27 +34,6 @@ class GameText:
             biddingNumbers.append((text, highlightedText, rect))
 
         return biddingNumbers
-
-    def createBiddingSuites(self) -> list:
-        suites = ["H", "S", "D", "C"]
-        biddingSuites = []
-        font = pygame.font.Font(None, 80)
-
-        # Manually defined positions for a 2x2 rectangle, with a slight gap from the numbers
-        positions = [
-            (750, 300),  # H (top-left)
-            (825, 300),  # S (top-right)
-            (750, 380),  # D (bottom-left)
-            (825, 380),  # C (bottom-right)
-        ]
-
-        for i in range(4):
-            text = font.render(suites[i], True, TEXT_COLOR)
-            highlightedText = font.render(suites[i], True, TEXT_HIGHLIGHT_COLOR)
-            rect = text.get_rect(center=positions[i])
-            biddingSuites.append((text, highlightedText, rect))
-
-        return biddingSuites
 
     def createWaitingForPlayers(self) -> tuple:
         font = pygame.font.Font(None, 36)

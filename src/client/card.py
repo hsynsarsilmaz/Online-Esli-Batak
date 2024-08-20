@@ -1,8 +1,6 @@
 import pygame
-import os
-import sys
 
-from src.common.common import BUILD
+from src.common.common import BUILD, resourcePath
 
 CARD_WIDTH, CARD_HEIGHT = 125, 182
 WIDTH, HEIGHT = 1600, 900
@@ -67,15 +65,6 @@ def loadCardReverseImages():
     cardReverseHorizontal = pygame.transform.rotate(cardReverseHorizontal, 90)
 
     return cardReverseVertical, cardReverseHorizontal
-
-
-def resourcePath(relativePath):
-    try:
-        base_path = sys._MEIPASS
-    except AttributeError:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relativePath)
 
 
 def loadCardImages(SuitsAndRanks, cards):

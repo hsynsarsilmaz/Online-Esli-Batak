@@ -12,6 +12,7 @@ async def handleEvents(
     gameState: dict,
     decks: dict,
     texts: GameText,
+    biddingSuites: list,
     websocket: websockets.WebSocketClientProtocol,
 ):
 
@@ -24,7 +25,7 @@ async def handleEvents(
             if rect.collidepoint(mousePos):
                 pass
 
-        for text, highligtedText, rect in texts.biddingSuites:
+        for image, highlighted, rect in biddingSuites:
             if rect.collidepoint(mousePos):
                 pass
 

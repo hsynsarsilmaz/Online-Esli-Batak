@@ -12,9 +12,11 @@ def renderText(items: list, screen: pygame.Surface):
             screen.blit(text, rect)
 
 
-def renderBidding(screen: pygame.Surface, texts: GameText, gameState: dict):
+def renderBidding(
+    screen: pygame.Surface, texts: GameText, biddingSuites: list, gameState: dict
+):
     renderText(texts.biddingNumbers, screen)
-    renderText(texts.biddingSuites, screen)
+    renderText(biddingSuites, screen)
 
     # Temporary
     if gameState["currentPlayer"] == gameState["myId"]:

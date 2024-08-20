@@ -10,6 +10,7 @@ from src.client.rendering import *
 from src.client.events import *
 from src.client.gamelogic import *
 from src.client.card import *
+from src.client.image import *
 
 
 async def main():
@@ -24,6 +25,7 @@ async def main():
     cardPlayAnimations = []
     cardDestoryAnimations = []
     texts = GameText()
+    biddingSuites = createBiddingSuites()
     running = True
 
     async with websockets.connect(URI) as websocket:
@@ -36,7 +38,9 @@ async def main():
 
         while running:
             for event in pygame.event.get():
-                if await handleEvents(event, gameState, decks, texts, websocket):
+                if await handleEvents(
+                    event, gameState, decks, texts, biddingSuites, websocket
+                ):
                     running = False
 
             screen.fill(BGCOLOR)
@@ -46,7 +50,7 @@ async def main():
                 screen.blit(texts.waitingForPlayers[0], texts.waitingForPlayers[1])
 
             elif gameState["stage"] == GameStage.BIDDING.value:
-                renderBidding(screen, texts, gameState)
+                renderBidding(screen, texts, biddingSuites, gameState)
                 renderCards(decks, screen, False)
 
             elif gameState["stage"] == GameStage.PLAYING.value:
