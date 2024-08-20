@@ -251,4 +251,6 @@ def getDefaultGameState() -> dict:
         "bidder": 0,
         "winner": UNDEFINED,
         "champion": UNDEFINED,
+        "bidSuit": "",
+        "bidRank": UNDEFINED,
     }

@@ -25,7 +25,7 @@ async def main():
     cardPlayAnimations = []
     cardDestoryAnimations = []
     texts = GameText()
-    biddingSuites = createBiddingSuites()
+    biddingSuits = createBiddingSuits()
     running = True
 
     async with websockets.connect(URI) as websocket:
@@ -39,7 +39,7 @@ async def main():
         while running:
             for event in pygame.event.get():
                 if await handleEvents(
-                    event, gameState, decks, texts, biddingSuites, websocket
+                    event, gameState, decks, texts, biddingSuits, websocket
                 ):
                     running = False
 
@@ -50,7 +50,7 @@ async def main():
                 screen.blit(texts.waitingForPlayers[0], texts.waitingForPlayers[1])
 
             elif gameState["stage"] == GameStage.BIDDING.value:
-                renderBidding(screen, texts, biddingSuites, gameState)
+                renderBidding(screen, texts, biddingSuits, gameState)
                 renderCards(decks, screen, False)
 
             elif gameState["stage"] == GameStage.PLAYING.value:

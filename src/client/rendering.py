@@ -4,6 +4,27 @@ from src.client.text import *
 from src.client.gamelogic import *
 
 
+def renderBiddingSuit(items: list, screen: pygame.Surface, selected: int):
+    for text, highligtedText, rect in items:
+        if items.index((text, highligtedText, rect)) == selected - 8:
+            screen.blit(highligtedText, rect)
+        elif rect.collidepoint(pygame.mouse.get_pos()):
+            screen.blit(highligtedText, rect)
+        else:
+            screen.blit(text, rect)
+
+
+def renderBiddingSuits(items: list, screen: pygame.Surface, selected: str):
+    suits = ["Hearts", "Spades", "Clubs", "Diamonds"]
+    for image, highlighted, rect in items:
+        if suits[items.index((image, highlighted, rect))] == selected:
+            screen.blit(highlighted, rect)
+        elif rect.collidepoint(pygame.mouse.get_pos()):
+            screen.blit(highlighted, rect)
+        else:
+            screen.blit(image, rect)
+
+
 def renderText(items: list, screen: pygame.Surface):
     for text, highligtedText, rect in items:
         if rect.collidepoint(pygame.mouse.get_pos()):
@@ -13,10 +34,10 @@ def renderText(items: list, screen: pygame.Surface):
 
 
 def renderBidding(
-    screen: pygame.Surface, texts: GameText, biddingSuites: list, gameState: dict
+    screen: pygame.Surface, texts: GameText, biddingSuits: list, gameState: dict
 ):
-    renderText(texts.biddingNumbers, screen)
-    renderText(biddingSuites, screen)
+    renderBiddingSuit(texts.biddingNumbers, screen, gameState["bidRank"])
+    renderBiddingSuits(biddingSuits, screen, gameState["bidSuit"])
 
     # Temporary
     if gameState["currentPlayer"] == gameState["myId"]:

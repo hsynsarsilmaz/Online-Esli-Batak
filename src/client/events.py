@@ -12,7 +12,7 @@ async def handleEvents(
     gameState: dict,
     decks: dict,
     texts: GameText,
-    biddingSuites: list,
+    biddingSuits: list,
     websocket: websockets.WebSocketClientProtocol,
 ):
 
@@ -23,11 +23,16 @@ async def handleEvents(
         mousePos = pygame.mouse.get_pos()
         for text, highligtedText, rect in texts.biddingNumbers:
             if rect.collidepoint(mousePos):
-                pass
+                gameState["bidRank"] = (
+                    texts.biddingNumbers.index((text, highligtedText, rect)) + 8
+                )
 
-        for image, highlighted, rect in biddingSuites:
+        for image, highlighted, rect in biddingSuits:
             if rect.collidepoint(mousePos):
-                pass
+                suits = ["Hearts", "Spades", "Clubs", "Diamonds"]
+                gameState["bidSuit"] = suits[
+                    biddingSuits.index((image, highlighted, rect))
+                ]
 
         if gameState["stage"] == GameStage.PLAYING.value:
             await playCard(decks, websocket, mousePos)

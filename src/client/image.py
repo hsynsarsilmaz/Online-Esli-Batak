@@ -2,9 +2,9 @@ import pygame
 from src.common.common import *
 
 
-def createBiddingSuites() -> list:
-    suites = ["Hearts", "Spades", "Clubs", "Diamonds"]
-    biddingSuites = []
+def createBiddingSuits() -> list:
+    suits = ["Hearts", "Spades", "Clubs", "Diamonds"]
+    biddingSuits = []
     imageSize = 50
 
     positions = [
@@ -14,7 +14,7 @@ def createBiddingSuites() -> list:
         (825, 380),
     ]
 
-    for suit in suites:
+    for suit in suits:
         relativePaths = [
             f"res/img/misc/{suit}.png",
             f"res/img/misc/{suit}2.png",
@@ -28,7 +28,7 @@ def createBiddingSuites() -> list:
         ).convert_alpha()
         image = pygame.transform.scale(image, (imageSize, imageSize))
         highlighted = pygame.transform.scale(highlighted, (imageSize, imageSize))
-        rect = image.get_rect(center=(positions[suites.index(suit)]))
-        biddingSuites.append((image, highlighted, rect))
+        rect = image.get_rect(center=(positions[suits.index(suit)]))
+        biddingSuits.append((image, highlighted, rect))
 
-    return biddingSuites
+    return biddingSuits
