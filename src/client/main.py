@@ -3,14 +3,12 @@ import asyncio
 import websockets
 
 from src.common.common import *
-
-from src.client.text import *
 from src.client.networking import *
 from src.client.rendering import *
 from src.client.events import *
 from src.client.gamelogic import *
 from src.client.card import *
-from src.client.image import *
+from src.client.ui import *
 
 
 async def main():
@@ -24,37 +22,31 @@ async def main():
     decks = {}
     cardPlayAnimations = []
     cardDestoryAnimations = []
-    texts = GameText()
-    biddingSuits = createBiddingSuits()
+    ui = GameUI()
     running = True
 
     async with websockets.connect(URI) as websocket:
 
         message_handler = asyncio.create_task(
-            handleServerConnection(
-                websocket, decks, gameState, texts, cardPlayAnimations
-            )
+            handleServerConnection(websocket, decks, gameState, ui, cardPlayAnimations)
         )
 
         while running:
             for event in pygame.event.get():
-                if await handleEvents(
-                    event, gameState, decks, texts, biddingSuits, websocket
-                ):
+                if await handleEvents(event, gameState, decks, ui, websocket):
                     running = False
 
             screen.fill(BGCOLOR)
             clock.tick(FPS)
 
             if gameState["stage"] == GameStage.WAITING.value:
-                screen.blit(texts.waitingForPlayers[0], texts.waitingForPlayers[1])
+                screen.blit(ui.waitingForPlayers.normal, ui.waitingForPlayers.rect)
 
             elif gameState["stage"] == GameStage.BIDDING.value:
-                renderBidding(screen, texts, biddingSuits, gameState)
+                renderBidding(screen, ui, gameState)
                 renderCards(decks, screen, False)
 
             elif gameState["stage"] == GameStage.PLAYING.value:
-                screen.blit(texts.bidValues[0], texts.bidValues[1])
                 renderCards(decks, screen, True)
                 renderCardPlayAnimations(
                     cardPlayAnimations, cardDestoryAnimations, screen, gameState
@@ -62,7 +54,7 @@ async def main():
                 renderCardDestroyAnimations(cardDestoryAnimations, screen, gameState)
 
             elif gameState["stage"] == GameStage.END.value:
-                screen.blit(texts.winner[0], texts.winner[1])
+                screen.blit(ui.winner.normal, ui.winner.rect)
 
             pygame.display.flip()
             await asyncio.sleep(0)

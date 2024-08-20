@@ -2,7 +2,7 @@ import pygame
 import websockets
 import json
 
-from src.client.text import *
+from src.client.ui import *
 from src.client.gamelogic import *
 from src.client.networking import *
 
@@ -11,8 +11,7 @@ async def handleEvents(
     event: pygame.event.Event,
     gameState: dict,
     decks: dict,
-    texts: GameText,
-    biddingSuits: list,
+    ui: GameUI,
     websocket: websockets.WebSocketClientProtocol,
 ):
 
@@ -21,32 +20,27 @@ async def handleEvents(
 
     elif event.type == pygame.MOUSEBUTTONDOWN:
         mousePos = pygame.mouse.get_pos()
-        for text, highligtedText, rect in texts.biddingNumbers:
-            if rect.collidepoint(mousePos):
-                gameState["bidRank"] = (
-                    texts.biddingNumbers.index((text, highligtedText, rect)) + 8
+
+        if gameState["currentPlayer"] == gameState["myId"]:
+            if ui.passBidding.rect.collidepoint(mousePos):
+                await websocket.send(
+                    json.dumps(
+                        {
+                            "Type": ReqType.BIDSKIP.value,
+                            "Data": {"bid": 7, "trump": "S"},
+                        }
+                    )
                 )
 
-        for image, highlighted, rect in biddingSuits:
-            if rect.collidepoint(mousePos):
-                suits = ["Hearts", "Spades", "Clubs", "Diamonds"]
-                gameState["bidSuit"] = suits[
-                    biddingSuits.index((image, highlighted, rect))
-                ]
+            for text in ui.biddingNumbers:
+                if text.rect.collidepoint(mousePos):
+                    gameState["bidRank"] = text.value
+
+            for image in ui.biddingSuits:
+                if image.rect.collidepoint(mousePos):
+                    gameState["bidSuit"] = image.value
 
         if gameState["stage"] == GameStage.PLAYING.value:
             await playCard(decks, websocket, mousePos)
-
-        if gameState["currentPlayer"] == gameState["myId"] and texts.passBidding[
-            2
-        ].collidepoint(mousePos):
-            await websocket.send(
-                json.dumps(
-                    {
-                        "Type": ReqType.BIDSKIP.value,
-                        "Data": {"bid": 7, "trump": "S"},
-                    }
-                )
-            )
 
     return False

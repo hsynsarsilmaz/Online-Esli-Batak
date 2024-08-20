@@ -1,7 +1,7 @@
 import websockets
 import json
 
-from src.client.text import *
+from src.client.ui import *
 from src.client.gamelogic import *
 
 
@@ -9,7 +9,7 @@ async def handleServerConnection(
     websocket: websockets.WebSocketClientProtocol,
     decks: dict,
     gameState: dict,
-    texts: GameText,
+    ui: GameUI,
     cardPlayAnimations: list,
 ):
     async for message in websocket:
@@ -33,8 +33,6 @@ async def handleServerConnection(
                 decks["my"].markPlayableCards(
                     True, "", 0, gameState["trump"], False, ""
                 )
-
-            texts.createBidValues(gameState["bid"], gameState["trump"])
 
         elif data["Type"] == ReqType.PLAYTURN.value:
             gameState["currentPlayer"] = data["Data"]["currentPlayer"]
@@ -68,7 +66,7 @@ async def handleServerConnection(
 
             if gameState["champion"] != UNDEFINED:
                 gameState["champion"] = data["Data"]["champion"]
-                texts.createWinner(gameState["champion"])
+                ui.createWinner(gameState["champion"])
 
             rePositionCards(decks)
 

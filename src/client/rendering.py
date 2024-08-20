@@ -1,47 +1,35 @@
 import pygame
 
-from src.client.text import *
+from src.client.ui import *
 from src.client.gamelogic import *
 
 
-def renderBiddingSuit(items: list, screen: pygame.Surface, selected: int):
-    for text, highligtedText, rect in items:
-        if items.index((text, highligtedText, rect)) == selected - 8:
-            screen.blit(highligtedText, rect)
-        elif rect.collidepoint(pygame.mouse.get_pos()):
-            screen.blit(highligtedText, rect)
-        else:
-            screen.blit(text, rect)
-
-
-def renderBiddingSuits(items: list, screen: pygame.Surface, selected: str):
-    suits = ["Hearts", "Spades", "Clubs", "Diamonds"]
-    for image, highlighted, rect in items:
-        if suits[items.index((image, highlighted, rect))] == selected:
-            screen.blit(highlighted, rect)
-        elif rect.collidepoint(pygame.mouse.get_pos()):
-            screen.blit(highlighted, rect)
-        else:
-            screen.blit(image, rect)
-
-
-def renderText(items: list, screen: pygame.Surface):
-    for text, highligtedText, rect in items:
-        if rect.collidepoint(pygame.mouse.get_pos()):
-            screen.blit(highligtedText, rect)
-        else:
-            screen.blit(text, rect)
-
-
-def renderBidding(
-    screen: pygame.Surface, texts: GameText, biddingSuits: list, gameState: dict
+def renderUiElements(
+    elements: list,
+    screen: pygame.Surface,
+    myTurn: bool = False,
+    clickable: bool = False,
+    selected=None,
 ):
-    renderBiddingSuit(texts.biddingNumbers, screen, gameState["bidRank"])
-    renderBiddingSuits(biddingSuits, screen, gameState["bidSuit"])
+    mousePos = pygame.mouse.get_pos()
+    for element in elements:
+        if myTurn and clickable:
+            if element.value == selected or element.rect.collidepoint(mousePos):
+                screen.blit(element.highlighted, element.rect)
+            else:
+                screen.blit(element.normal, element.rect)
+        else:
+            screen.blit(element.disabled, element.rect)
 
-    if gameState["currentPlayer"] == gameState["myId"]:
-        renderText([texts.passBidding], screen)
-        renderText([texts.makeBidding], screen)
+
+def renderBidding(screen: pygame.Surface, ui: GameUI, gameState: dict):
+    myTurn = gameState["currentPlayer"] == gameState["myId"]
+    renderUiElements(ui.biddingNumbers, screen, myTurn, True, gameState["bidRank"])
+    renderUiElements(ui.biddingSuits, screen, myTurn, True, gameState["bidSuit"])
+
+    if myTurn:
+        renderUiElements([ui.passBidding], screen, myTurn, True)
+        renderUiElements([ui.makeBidding], screen, myTurn, True)
 
 
 def renderCards(decks: dict, screen: pygame.Surface, playingStage: bool):
