@@ -39,9 +39,9 @@ def renderBidding(
     renderBiddingSuit(texts.biddingNumbers, screen, gameState["bidRank"])
     renderBiddingSuits(biddingSuits, screen, gameState["bidSuit"])
 
-    # Temporary
     if gameState["currentPlayer"] == gameState["myId"]:
-        renderText([texts.skipBidding], screen)
+        renderText([texts.passBidding], screen)
+        renderText([texts.makeBidding], screen)
 
 
 def renderCards(decks: dict, screen: pygame.Surface, playingStage: bool):

@@ -20,7 +20,6 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
         async for message in websocket:
             data = json.loads(message)
 
-            # Temporary
             if data["Type"] == ReqType.BIDSKIP.value:
                 await skipBid(myId, connectedClients, turn, data)
 

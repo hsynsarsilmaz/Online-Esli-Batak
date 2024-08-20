@@ -37,8 +37,7 @@ async def handleEvents(
         if gameState["stage"] == GameStage.PLAYING.value:
             await playCard(decks, websocket, mousePos)
 
-        # temporary
-        if gameState["currentPlayer"] == gameState["myId"] and texts.skipBidding[
+        if gameState["currentPlayer"] == gameState["myId"] and texts.passBidding[
             2
         ].collidepoint(mousePos):
             await websocket.send(

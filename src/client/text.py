@@ -10,8 +10,8 @@ class GameText:
         self.waitingForPlayers = self.createWaitingForPlayers()
         self.biddingNumbers = self.createBiddingNumbers()
         self.bidValues = []
-        # Temporary
-        self.skipBidding = self.createSkipBidding()
+        self.passBidding = self.createPassBidding()
+        self.makeBidding = self.createMakeBidding()
         self.winner = None
 
     def createBiddingNumbers(self) -> list:
@@ -43,13 +43,25 @@ class GameText:
 
         return (text, textRect)
 
-    # temporary
-    def createSkipBidding(self) -> tuple:
+    def createPassBidding(self) -> tuple:
         font = pygame.font.Font(None, 60)
         text = font.render("Pass", True, TEXT_COLOR)
         highligtedText = font.render("Pass", True, TEXT_HIGHLIGHT_COLOR)
+        disabledText = font.render("Pass", True, TEXT_COLOR)
+        disabledText.set_alpha(50)
         textRect = text.get_rect()
         textRect.center = (1100, 300)
+
+        return (text, highligtedText, textRect)
+
+    def createMakeBidding(self) -> tuple:
+        font = pygame.font.Font(None, 60)
+        text = font.render("Bid", True, TEXT_COLOR)
+        highligtedText = font.render("Bid", True, TEXT_HIGHLIGHT_COLOR)
+        disabledText = font.render("Pass", True, TEXT_COLOR)
+        disabledText.set_alpha(50)
+        textRect = text.get_rect()
+        textRect.center = (1100, 375)
 
         return (text, highligtedText, textRect)
 
