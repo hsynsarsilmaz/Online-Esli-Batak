@@ -19,15 +19,20 @@ class GameText:
         biddingNumbers = []
         font = pygame.font.Font(None, 80)
 
-        for i in range(7, 14):
+        positions = [
+            (400, 300),  # 8
+            (475, 300),  # 9
+            (550, 300),  # 10
+            (437, 380),  # 11
+            (512, 380),  # 12
+            (475, 460),  # 13
+        ]
+
+        for i in range(8, 14):
             text = font.render(str(i), True, TEXT_COLOR)
-            highligtedText = font.render(str(i), True, TEXT_HIGHLIGHT_COLOR)
-            row = (i - 7) // 3
-            col = (i - 7) % 3 + (1 if i == 13 else 0)
-            xPos = 400 + 75 * col
-            yPos = 300 + 80 * row
-            rect = text.get_rect(center=(xPos, yPos))
-            biddingNumbers.append((text, highligtedText, rect))
+            highlightedText = font.render(str(i), True, TEXT_HIGHLIGHT_COLOR)
+            rect = text.get_rect(center=(positions[i - 8]))
+            biddingNumbers.append((text, highlightedText, rect))
 
         return biddingNumbers
 
@@ -36,13 +41,19 @@ class GameText:
         biddingSuites = []
         font = pygame.font.Font(None, 80)
 
+        # Manually defined positions for a 2x2 rectangle, with a slight gap from the numbers
+        positions = [
+            (750, 300),  # H (top-left)
+            (825, 300),  # S (top-right)
+            (750, 380),  # D (bottom-left)
+            (825, 380),  # C (bottom-right)
+        ]
+
         for i in range(4):
             text = font.render(suites[i], True, TEXT_COLOR)
-            highligtedText = font.render(suites[i], True, TEXT_HIGHLIGHT_COLOR)
-            xPos = 800 + 75 * i
-            yPos = 300
-            rect = text.get_rect(center=(xPos, yPos))
-            biddingSuites.append((text, highligtedText, rect))
+            highlightedText = font.render(suites[i], True, TEXT_HIGHLIGHT_COLOR)
+            rect = text.get_rect(center=positions[i])
+            biddingSuites.append((text, highlightedText, rect))
 
         return biddingSuites
 
@@ -56,11 +67,11 @@ class GameText:
 
     # temporary
     def createSkipBidding(self) -> tuple:
-        font = pygame.font.Font(None, 36)
-        text = font.render("Skip Bidding", True, (255, 255, 255))
-        highligtedText = font.render("Skip Bidding", True, (255, 0, 0))
+        font = pygame.font.Font(None, 60)
+        text = font.render("Pass", True, TEXT_COLOR)
+        highligtedText = font.render("Pass", True, TEXT_HIGHLIGHT_COLOR)
         textRect = text.get_rect()
-        textRect.center = (WIDTH // 2, HEIGHT // 2)
+        textRect.center = (1100, 300)
 
         return (text, highligtedText, textRect)
 
