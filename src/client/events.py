@@ -23,14 +23,15 @@ async def handleEvents(
 
         if gameState["currentPlayer"] == gameState["myId"]:
             if ui.passBidding.rect.collidepoint(mousePos):
-                await websocket.send(
-                    json.dumps(
-                        {
-                            "Type": ReqType.BIDSKIP.value,
-                            "Data": {"bid": 7, "trump": "S"},
-                        }
+                if gameState["bid"] != UNDEFINED:
+                    await websocket.send(
+                        json.dumps(
+                            {
+                                "Type": ReqType.BIDSKIP.value,
+                                "Data": {"bid": 7, "trump": "S"},
+                            }
+                        )
                     )
-                )
 
             for text in ui.biddingNumbers:
                 if text.rect.collidepoint(mousePos):
