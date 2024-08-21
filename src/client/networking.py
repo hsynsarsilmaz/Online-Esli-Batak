@@ -20,9 +20,13 @@ async def handleServerConnection(
             gameState["myId"] = data["Data"]
 
         elif data["Type"] == ReqType.START.value:
-            loadCardImages(data["Data"], cards)
+            loadCardImages(data["Data"]["cards"], cards)
             dealCards(cards, decks, gameState["myId"])
             gameState["stage"] = GameStage.BIDDING.value
+            gameState["bid"] = UNDEFINED
+            gameState["trump"] = TBD
+            gameState["bidder"] = UNDEFINED
+            gameState["currentPlayer"] = data["Data"]["starterId"]
 
         elif data["Type"] == ReqType.GAMESTART.value:
             gameState["bid"] = data["Data"]["bid"]

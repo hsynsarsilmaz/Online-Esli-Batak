@@ -2,6 +2,7 @@ from .card import *
 from src.common.common import *
 
 SUIT_ORDER = {"H": 0, "S": 1, "D": 2, "C": 3}
+TBD = ""
 
 
 class GameStage(enum.Enum):
@@ -246,9 +247,9 @@ def getDefaultGameState() -> dict:
         "myId": UNDEFINED,
         "currentPlayer": 0,
         "stage": GameStage.WAITING.value,
-        "bid": 0,
-        "trump": "",
-        "bidder": 0,
+        "bid": UNDEFINED,
+        "trump": TBD,
+        "bidder": UNDEFINED,
         "winner": UNDEFINED,
         "champion": UNDEFINED,
         "bidSuit": "",

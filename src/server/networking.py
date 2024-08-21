@@ -31,6 +31,10 @@ async def connectClient(
 
     if myId == 3:
         print("All players connected, starting game...")
-        await broadcast({"Type": ReqType.START.value, "Data": cards}, connectedClients)
+        # Starter will be rotated
+        await broadcast(
+            {"Type": ReqType.START.value, "Data": {"cards": cards, "starterId": 0}},
+            connectedClients,
+        )
 
     return myId

@@ -9,6 +9,7 @@ from src.server.gamelogic import *
 
 connectedClients = []
 turn = Turn()
+bidding = Bidding()
 cards = []
 points = [0, 0]
 

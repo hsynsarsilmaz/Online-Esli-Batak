@@ -111,3 +111,11 @@ async def playTurn(
         },
         connectedClients,
     )
+
+
+class Bidding:
+    def __init__(self):
+        self.bidder = UNDEFINED
+        self.bid = UNDEFINED
+        self.trump = TBD
+        self.biddablePlayers = [True, True, True, True]
