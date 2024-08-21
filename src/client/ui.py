@@ -82,6 +82,10 @@ class GameUI:
         self.biddingSuits = self.createBiddingSuits()
         self.passBidding = Text("Pass", 60, (1100, 300), True)
         self.makeBidding = Text("Bid", 60, (1100, 375), True)
+        self.points = [
+            Text("Team A: 0", 35, (1350, 20), False),
+            Text("Team B: 0", 35, (1500, 20), False),
+        ]
         self.winner = None
 
     def createBiddingNumbers(self) -> list:

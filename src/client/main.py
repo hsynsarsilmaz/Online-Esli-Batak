@@ -52,9 +52,7 @@ async def main():
                     cardPlayAnimations, cardDestoryAnimations, screen, gameState
                 )
                 renderCardDestroyAnimations(cardDestoryAnimations, screen, gameState)
-
-            elif gameState["stage"] == GameStage.END.value:
-                screen.blit(ui.winner.normal, ui.winner.rect)
+                renderPoints(ui, screen)
 
             pygame.display.flip()
             await asyncio.sleep(0)

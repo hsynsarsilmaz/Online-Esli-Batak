@@ -23,7 +23,7 @@ def renderBidSelect(elements: list, screen: pygame.Surface, selected, gameState:
             except ValueError:
                 pass
 
-            if element.value == selected or element.rect.collidepoint(mousePos):
+            if element.value == str(selected) or element.rect.collidepoint(mousePos):
                 screen.blit(element.highlighted, element.rect)
             else:
                 screen.blit(element.normal, element.rect)
@@ -137,3 +137,8 @@ def renderCardDestroyAnimations(
 
     if len(destroyAnimations) == 4 and destroyAnimations[3].frame == 61:
         destroyAnimations.clear()
+
+
+def renderPoints(ui: GameUI, screen: pygame.Surface):
+    for point in ui.points:
+        screen.blit(point.normal, point.rect)
