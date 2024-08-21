@@ -22,6 +22,7 @@ class ReqType(enum.Enum):
     GAMESTART = 5
     PLAYCARD = 6
     PLAYTURN = 7
+    ENDTURN = 8
 
 
 def resourcePath(relativePath):

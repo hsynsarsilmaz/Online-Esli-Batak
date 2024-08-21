@@ -83,6 +83,45 @@ async def handleServerConnection(
 
             rePositionCards(decks)
 
+        elif data["Type"] == ReqType.ENDTURN.value:
+            gameState["points"][0] += data["Data"]["points"][0]
+            gameState["points"][1] += data["Data"]["points"][1]
+            ui.updatePoints(gameState["points"])
+            # gameState["currentPlayer"] = data["Data"]["currentPlayer"]
+            # if gameState["currentPlayer"] != gameState["myId"]:
+            #     decks["my"].unMarkMyCards()
+            # else:
+            #     decks["my"].markPlayableCards(
+            #         data["Data"]["isFirstTurn"],
+            #         data["Data"]["suit"],
+            #         data["Data"]["biggestRank"],
+            #         gameState["trump"],
+            #         data["Data"]["isTrumpPlayed"],
+            #         data["Data"]["originalSuit"],
+            #     )
+            # card = None
+            # for key, deck in decks.items():
+            #     card = deck.findCard(data["Data"]["suit"], data["Data"]["rank"])
+            #     if card:
+            #         deck.cards.remove(card)
+            #         break
+            # # move the card to center
+            # card.xVel = (WIDTH // 2 - card.rect.center[0]) / 60
+            # card.yVel = (HEIGHT // 2 - card.rect.center[1]) / 60
+            # card.frame = 0
+            # card.rect = card.image.get_rect(center=card.rect.center)
+
+            # cardPlayAnimations.append(card)
+
+            # gameState["winner"] = data["Data"]["winner"]
+            # gameState["champion"] = data["Data"]["champion"]
+
+            # if gameState["champion"] != UNDEFINED:
+            #     gameState["champion"] = data["Data"]["champion"]
+            #     ui.createWinner(gameState["champion"])
+
+            # rePositionCards(decks)
+
 
 async def playCard(
     decks: dict, websocket: websockets.WebSocketClientProtocol, mousePos: tuple

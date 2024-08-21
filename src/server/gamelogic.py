@@ -112,7 +112,12 @@ async def processBid(
 
 
 async def playTurn(
-    myId: int, connectedClients: list, turn: Turn, data: dict, points: list
+    myId: int,
+    connectedClients: list,
+    turn: Turn,
+    data: dict,
+    points: list,
+    bidding: Bidding,
 ):
     winner = UNDEFINED
     champion = UNDEFINED
@@ -125,10 +130,28 @@ async def playTurn(
             points[1] += 1
         turn.endTurn()
         if turn.number == 13:
-            if points[0] > points[1]:
-                champion = 0
+            if bidding.bidder == 0 or bidding.bidder == 2:
+                if points[0] < bidding.bid:
+                    points[0] = -bidding.bid
+                if points[1] < 2:
+                    points[1] = -bidding.bid
             else:
-                champion = 1
+                if points[0] < 2:
+                    points[0] = -bidding.bid
+                if points[1] < bidding.bid:
+                    points[1] = -bidding.bid
+
+            await broadcast(
+                {
+                    "Type": ReqType.ENDTURN.value,
+                    "Data": {
+                        "points": points,
+                    },
+                },
+                connectedClients,
+            )
+            print("Game ended")
+            return
 
     await broadcast(
         {

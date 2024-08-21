@@ -138,3 +138,13 @@ class GameUI:
             biddingSuits.append(image)
 
         return biddingSuits
+
+    def updatePoints(self, points: list):
+        self.points[0].value = f"Team A: {points[0]}"
+        self.points[1].value = f"Team B: {points[1]}"
+        self.points[0].normal = pygame.font.Font(None, 35).render(
+            self.points[0].value, True, TEXT_COLOR
+        )
+        self.points[1].normal = pygame.font.Font(None, 35).render(
+            self.points[1].value, True, TEXT_COLOR
+        )
