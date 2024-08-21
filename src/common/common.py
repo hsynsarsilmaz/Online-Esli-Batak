@@ -17,10 +17,11 @@ class ReqType(enum.Enum):
     CONNECT = 0
     DISCONNECT = 1
     START = 2
-    BIDSKIP = 3
-    GAMESTART = 4
-    PLAYCARD = 5
-    PLAYTURN = 6
+    MAKEBID = 3
+    BIDDING = 4
+    GAMESTART = 5
+    PLAYCARD = 6
+    PLAYTURN = 7
 
 
 def resourcePath(relativePath):

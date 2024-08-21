@@ -15,14 +15,16 @@ points = [0, 0]
 
 
 async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str):
-    myId = await connectClient(websocket, connectedClients, cards)
+    myId = await connectClient(
+        websocket, connectedClients, cards, bidding.currentPlayer
+    )
 
     try:
         async for message in websocket:
             data = json.loads(message)
 
-            if data["Type"] == ReqType.BIDSKIP.value:
-                await skipBid(myId, connectedClients, turn, data)
+            if data["Type"] == ReqType.MAKEBID.value:
+                await processBid(myId, connectedClients, bidding, data, turn)
 
             if data["Type"] == ReqType.PLAYCARD.value:
                 await playTurn(myId, connectedClients, turn, data, points)

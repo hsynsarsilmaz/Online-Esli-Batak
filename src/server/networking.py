@@ -21,7 +21,10 @@ def printPlayers(connectedClients: list):
 
 
 async def connectClient(
-    websocket: websockets.WebSocketServerProtocol, connectedClients: list, cards: list
+    websocket: websockets.WebSocketServerProtocol,
+    connectedClients: list,
+    cards: list,
+    starter: int,
 ):
     myId = len(connectedClients)
     connectedClients.append(websocket)
@@ -33,7 +36,10 @@ async def connectClient(
         print("All players connected, starting game...")
         # Starter will be rotated
         await broadcast(
-            {"Type": ReqType.START.value, "Data": {"cards": cards, "starterId": 0}},
+            {
+                "Type": ReqType.START.value,
+                "Data": {"cards": cards, "starterId": starter},
+            },
             connectedClients,
         )
 

@@ -28,11 +28,20 @@ async def handleServerConnection(
             gameState["bidder"] = UNDEFINED
             gameState["currentPlayer"] = data["Data"]["starterId"]
 
+        elif data["Type"] == ReqType.BIDDING.value:
+            gameState["bid"] = data["Data"]["bid"]
+            gameState["trump"] = data["Data"]["trump"]
+            gameState["bidder"] = data["Data"]["bidder"]
+            gameState["bidRank"] = UNDEFINED
+            gameState["bidSuit"] = TBD
+            gameState["currentPlayer"] = data["Data"]["currentPlayer"]
+
         elif data["Type"] == ReqType.GAMESTART.value:
             gameState["bid"] = data["Data"]["bid"]
             gameState["trump"] = data["Data"]["trump"]
             gameState["bidder"] = data["Data"]["bidder"]
             gameState["stage"] = GameStage.PLAYING.value
+            gameState["currentPlayer"] = data["Data"]["currentPlayer"]
             if gameState["myId"] == gameState["currentPlayer"]:
                 decks["my"].markPlayableCards(
                     True, "", 0, gameState["trump"], False, ""

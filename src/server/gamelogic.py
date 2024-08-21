@@ -50,6 +50,30 @@ class Turn:
         self.winner = UNDEFINED
 
 
+class Bidding:
+    def __init__(self):
+        self.currentPlayer = 0
+        self.bidder = UNDEFINED
+        self.bid = UNDEFINED
+        self.trump = TBD
+        self.biddablePlayers = [True, True, True, True]
+
+    def makeBid(self, bid: int, trump: str, bidder: int):
+        self.bid = bid
+        self.trump = trump
+        self.bidder = bidder
+        self.currentPlayer = (bidder + 1) % 4
+
+    def passBid(self, player: int):
+        self.biddablePlayers[player] = False
+        self.currentPlayer = (self.currentPlayer + 1) % 4
+        while not self.biddablePlayers[self.currentPlayer]:
+            self.currentPlayer = (self.currentPlayer + 1) % 4
+
+    def isBiddingEnded(self):
+        return sum(self.biddablePlayers) == 1
+
+
 def dealCards(cards: list):
     suits = ["H", "S", "D", "C"]
     ranks = [int(n) for n in range(2, 15)]
@@ -59,16 +83,34 @@ def dealCards(cards: list):
     random.shuffle(cards)
 
 
-async def skipBid(myId: int, connectedClients: list, turn: Turn, data: dict):
-    print(f"Player {myId + 1} skipped bidding")
-    turn.trump = data["Data"]["trump"]
+async def processBid(
+    myId: int, connectedClients: list, bidding: Bidding, data: dict, turn: Turn
+):
+    if data["Data"]["bid"] == UNDEFINED:
+        bidding.passBid(myId)
+    else:
+        bidding.makeBid(data["Data"]["bid"], data["Data"]["trump"], myId)
+
+    if bidding.isBiddingEnded():
+        turn.trump = bidding.trump
+        request = ReqType.GAMESTART.value
+    else:
+        request = ReqType.BIDDING.value
+
+    print(bidding.bidder)
+
     await broadcast(
         {
-            "Type": ReqType.GAMESTART.value,
+            "Type": request,
             "Data": {
-                "bid": data["Data"]["bid"],
-                "trump": data["Data"]["trump"],
-                "bidder": myId,
+                "bid": bidding.bid,
+                "trump": bidding.trump,
+                "bidder": bidding.bidder,
+                "currentPlayer": (
+                    bidding.currentPlayer
+                    if request == ReqType.BIDDING.value
+                    else bidding.bidder
+                ),
             },
         },
         connectedClients,
@@ -111,11 +153,3 @@ async def playTurn(
         },
         connectedClients,
     )
-
-
-class Bidding:
-    def __init__(self):
-        self.bidder = UNDEFINED
-        self.bid = UNDEFINED
-        self.trump = TBD
-        self.biddablePlayers = [True, True, True, True]

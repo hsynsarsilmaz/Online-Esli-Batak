@@ -27,8 +27,8 @@ async def handleEvents(
                     await websocket.send(
                         json.dumps(
                             {
-                                "Type": ReqType.BIDSKIP.value,
-                                "Data": {"bid": 7, "trump": "S"},
+                                "Type": ReqType.MAKEBID.value,
+                                "Data": {"bid": UNDEFINED, "trump": TBD},
                             }
                         )
                     )
@@ -37,8 +37,11 @@ async def handleEvents(
                 await websocket.send(
                     json.dumps(
                         {
-                            "Type": ReqType.BIDSKIP.value,
-                            "Data": {"bid": 7, "trump": "S"},
+                            "Type": ReqType.MAKEBID.value,
+                            "Data": {
+                                "bid": gameState["bidRank"],
+                                "trump": gameState["bidSuit"][0],
+                            },
                         }
                     )
                 )
