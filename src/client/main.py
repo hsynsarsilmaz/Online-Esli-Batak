@@ -52,7 +52,31 @@ async def main():
                     cardPlayAnimations, cardDestoryAnimations, screen, gameState
                 )
                 renderCardDestroyAnimations(cardDestoryAnimations, screen, gameState)
-                renderPoints(ui, screen)
+
+            renderPoints(ui, screen)
+
+            if gameState["newRound"]:
+                points = gameState["points"]
+                myId = gameState["myId"]
+                starterId = gameState["newRoundData"]["starterId"]
+                points[0] += gameState["newRoundData"]["points"][0]
+                points[1] += gameState["newRoundData"]["points"][1]
+                print(points)
+                ui.updatePoints(points)
+                cards = []
+                loadCardImages(
+                    gameState["newRoundData"]["cards"],
+                    cards,
+                )
+                startNewRound(gameState, decks)
+                dealCards(cards, decks, myId)
+                gameState["myId"] = myId
+                gameState["points"] = points
+                gameState["stage"] = GameStage.BIDDING.value
+                gameState["bid"] = UNDEFINED
+                gameState["trump"] = TBD
+                gameState["bidder"] = UNDEFINED
+                gameState["currentPlayer"] = starterId
 
             pygame.display.flip()
             await asyncio.sleep(0)

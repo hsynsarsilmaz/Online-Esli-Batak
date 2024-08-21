@@ -255,4 +255,12 @@ def getDefaultGameState() -> dict:
         "bidSuit": "",
         "bidRank": UNDEFINED,
         "points": [0, 0],
+        "endRound": False,
+        "newRound": False,
+        "newRoundData": {},
     }
+
+
+def startNewRound(gameState: dict, decks: list):
+    gameState.update(getDefaultGameState())
+    decks.clear()

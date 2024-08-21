@@ -137,7 +137,8 @@ def renderCardDestroyAnimations(
 
     if len(destroyAnimations) == 4 and destroyAnimations[3].frame == 61:
         destroyAnimations.clear()
-
+        if gameState["endRound"]:
+            gameState["newRound"] = True
 
 def renderPoints(ui: GameUI, screen: pygame.Surface):
     for point in ui.points:

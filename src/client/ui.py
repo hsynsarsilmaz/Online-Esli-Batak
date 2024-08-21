@@ -56,7 +56,6 @@ class Image(UiElement):
         normal = pygame.transform.scale(normal, (size, size))
         rect = normal.get_rect(center=position)
         highlighted = pygame.image.load(path).convert_alpha()
-        # Fill all the pixels with the highlight color
         highlighted.fill((*highlightColor, 255), special_flags=pygame.BLEND_RGBA_MULT)
         disabled = pygame.image.load(path).convert_alpha()
 

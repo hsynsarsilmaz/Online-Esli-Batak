@@ -34,7 +34,6 @@ async def connectClient(
 
     if myId == 3:
         print("All players connected, starting game...")
-        # Starter will be rotated
         await broadcast(
             {
                 "Type": ReqType.START.value,

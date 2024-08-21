@@ -8,16 +8,7 @@ TBD = ""
 
 class Turn:
     def __init__(self):
-        self.number = 0
-        self.originalSuit = TBD
-        self.turnSuit = TBD
-        self.lastRank = 0
-        self.biggestRank = 0
-        self.trump = TBD
-        self.isTrumpPlayed = False
-        self.currentPlayer = 0
-        self.playedCount = 0
-        self.winner = UNDEFINED
+        self.reset()
 
     def play(self, suit: str, rank: int, player: int):
         if self.winner == UNDEFINED:
@@ -45,14 +36,23 @@ class Turn:
         self.currentPlayer = self.winner
         self.winner = UNDEFINED
 
+    def reset(self):
+        self.number = 0
+        self.originalSuit = TBD
+        self.turnSuit = TBD
+        self.lastRank = 0
+        self.biggestRank = 0
+        self.trump = TBD
+        self.isTrumpPlayed = False
+        self.currentPlayer = 0
+        self.playedCount = 0
+        self.winner = UNDEFINED
+
 
 class Bidding:
-    def __init__(self):
-        self.currentPlayer = 0
-        self.bidder = UNDEFINED
-        self.bid = UNDEFINED
-        self.trump = TBD
-        self.biddablePlayers = [True, True, True, True]
+
+    def __init__(self, starter: int):
+        self.reset(starter)
 
     def makeBid(self, bid: int, trump: str, bidder: int):
         self.bid = bid
@@ -69,8 +69,17 @@ class Bidding:
     def isBiddingEnded(self):
         return sum(self.biddablePlayers) == 1
 
+    def reset(self, starter: int):
+        self.starter = starter
+        self.currentPlayer = starter
+        self.bidder = UNDEFINED
+        self.bid = UNDEFINED
+        self.trump = TBD
+        self.biddablePlayers = [True, True, True, True]
+
 
 def dealCards(cards: list):
+    cards.clear()
     suits = ["H", "S", "D", "C"]
     ranks = [int(n) for n in range(2, 15)]
     for suit in suits:
@@ -118,6 +127,7 @@ async def playTurn(
     data: dict,
     points: list,
     bidding: Bidding,
+    cards: list,
 ):
     winner = UNDEFINED
     champion = UNDEFINED
@@ -141,16 +151,33 @@ async def playTurn(
                 if points[1] < bidding.bid:
                     points[1] = -bidding.bid
 
+            starter = bidding.starter + 1 % 4
+            bidding.reset(starter)
+            dealCards(cards)
+
             await broadcast(
                 {
-                    "Type": ReqType.ENDTURN.value,
+                    "Type": ReqType.ENDROUND.value,
                     "Data": {
+                        "suit": turn.turnSuit,
+                        "rank": turn.lastRank,
+                        "biggestRank": turn.biggestRank,
+                        "originalSuit": turn.originalSuit,
+                        "isTrumpPlayed": turn.isTrumpPlayed,
+                        "currentPlayer": turn.currentPlayer,
+                        "winner": winner,
+                        "champion": champion,
+                        "isFirstTurn": turn.playedCount == 0,
                         "points": points,
+                        "cards": cards,
+                        "starterId": bidding.starter,
                     },
                 },
                 connectedClients,
             )
-            print("Game ended")
+
+            turn.reset()
+
             return
 
     await broadcast(

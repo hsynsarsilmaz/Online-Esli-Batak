@@ -9,9 +9,7 @@ from src.server.gamelogic import *
 
 connectedClients = []
 turn = Turn()
-# testing
-turn.number = 12
-bidding = Bidding()
+bidding = Bidding(0)
 cards = []
 points = [0, 0]
 
@@ -29,7 +27,9 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
                 await processBid(myId, connectedClients, bidding, data, turn)
 
             if data["Type"] == ReqType.PLAYCARD.value:
-                await playTurn(myId, connectedClients, turn, data, points, bidding)
+                await playTurn(
+                    myId, connectedClients, turn, data, points, bidding, cards
+                )
 
     except websockets.ConnectionClosed:
         print("Client disconnected")
