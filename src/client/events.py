@@ -47,8 +47,11 @@ async def handleEvents(
                 )
 
             for text in ui.biddingNumbers:
-                if text.rect.collidepoint(mousePos):
-                    gameState["bidRank"] = text.value
+                if (
+                    text.rect.collidepoint(mousePos)
+                    and int(text.value) > gameState["bid"]
+                ):
+                    gameState["bidRank"] = int(text.value)
 
             for image in ui.biddingSuits:
                 if image.rect.collidepoint(mousePos):

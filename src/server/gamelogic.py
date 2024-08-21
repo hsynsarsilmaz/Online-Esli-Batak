@@ -21,15 +21,11 @@ class Turn:
 
     def play(self, suit: str, rank: int, player: int):
         if self.winner == UNDEFINED:
-            # print(f"First card played by player {player + 1}")
             self.winner = player
             self.biggestRank = rank
             self.originalSuit = suit
             self.turnSuit = suit
         else:
-            # print(
-            #     f"Player {player + 1} played {rank} of {suit}, trump is {self.trump}, last suit is {self.turnSuit}"
-            # )
             if suit == self.trump and self.turnSuit != self.trump:
                 self.winner = player
                 self.turnSuit = self.trump
@@ -96,8 +92,6 @@ async def processBid(
         request = ReqType.GAMESTART.value
     else:
         request = ReqType.BIDDING.value
-
-    print(bidding.bidder)
 
     await broadcast(
         {

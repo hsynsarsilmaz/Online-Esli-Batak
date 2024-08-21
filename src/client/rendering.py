@@ -16,6 +16,13 @@ def renderBidSelect(elements: list, screen: pygame.Surface, selected, gameState:
         if not mandatoryBidder and element.value == "7":
             continue
         elif myTurn:
+            try:
+                if int(element.value) <= gameState["bid"]:
+                    screen.blit(element.disabled, element.rect)
+                    continue
+            except ValueError:
+                pass
+
             if element.value == selected or element.rect.collidepoint(mousePos):
                 screen.blit(element.highlighted, element.rect)
             else:
