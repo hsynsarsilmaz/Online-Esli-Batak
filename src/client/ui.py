@@ -93,10 +93,13 @@ class GameUI:
             (437, 380),
             (512, 380),
             (475, 460),
+            (650, 380),
         ]
 
         for i in range(8, 14):
             biddingNumbers.append(Text(str(i), 80, positions[i - 8], True))
+
+        biddingNumbers.append(Text(str(7), 80, positions[-1], True))
 
         return biddingNumbers
 

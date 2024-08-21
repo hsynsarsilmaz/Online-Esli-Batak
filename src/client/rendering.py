@@ -10,9 +10,12 @@ def renderUiElements(
     myTurn: bool = False,
     clickable: bool = False,
     selected=None,
+    mandatoryBidder: bool = False,
 ):
     mousePos = pygame.mouse.get_pos()
     for element in elements:
+        if element.value == "7" and not mandatoryBidder:
+            continue
         if myTurn and clickable:
             if element.value == selected or element.rect.collidepoint(mousePos):
                 screen.blit(element.highlighted, element.rect)
@@ -24,7 +27,13 @@ def renderUiElements(
 
 def renderBidding(screen: pygame.Surface, ui: GameUI, gameState: dict):
     myTurn = gameState["currentPlayer"] == gameState["myId"]
-    renderUiElements(ui.biddingNumbers, screen, myTurn, True, gameState["bidRank"])
+    mandatoryBidder = (
+        gameState["currentPlayer"] == gameState["myId"]
+        and gameState["bid"] == UNDEFINED
+    )
+    renderUiElements(
+        ui.biddingNumbers, screen, myTurn, True, gameState["bidRank"], mandatoryBidder
+    )
     renderUiElements(ui.biddingSuits, screen, myTurn, True, gameState["bidSuit"])
 
     if myTurn:
