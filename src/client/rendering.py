@@ -4,48 +4,58 @@ from src.client.ui import *
 from src.client.gamelogic import *
 
 
-def renderUiElements(
-    elements: list,
-    screen: pygame.Surface,
-    myTurn: bool = False,
-    clickable: bool = False,
-    selected=None,
-    mandatoryBidder: bool = False,
-):
+def renderBidSelect(elements: list, screen: pygame.Surface, selected, gameState: dict):
     mousePos = pygame.mouse.get_pos()
-    for element in elements:
-
-        if not mandatoryBidder and element.value == "7":
-            continue
-
-        if mandatoryBidder and element.value == "Pass":
-            print("pass")
-            image = element.disabled
-        elif myTurn and clickable:
-            if element.value == selected or element.rect.collidepoint(mousePos):
-                image = element.highlighted
-            else:
-                image = element.normal
-        else:
-            image = element.disabled
-
-        screen.blit(image, element.rect)
-
-
-def renderBidding(screen: pygame.Surface, ui: GameUI, gameState: dict):
     myTurn = gameState["currentPlayer"] == gameState["myId"]
     mandatoryBidder = (
         gameState["currentPlayer"] == gameState["myId"]
         and gameState["bid"] == UNDEFINED
     )
-    renderUiElements(
-        ui.biddingNumbers, screen, myTurn, True, gameState["bidRank"], mandatoryBidder
+
+    for element in elements:
+        if not mandatoryBidder and element.value == "7":
+            continue
+        elif myTurn:
+            if element.value == selected or element.rect.collidepoint(mousePos):
+                screen.blit(element.highlighted, element.rect)
+            else:
+                screen.blit(element.normal, element.rect)
+        else:
+            screen.blit(element.disabled, element.rect)
+
+
+def renderBidAction(element: Text, screen: pygame.Surface, gameState: dict):
+    mousePos = pygame.mouse.get_pos()
+    myTurn = gameState["currentPlayer"] == gameState["myId"]
+    mandatoryBidder = (
+        gameState["currentPlayer"] == gameState["myId"]
+        and gameState["bid"] == UNDEFINED
     )
-    renderUiElements(ui.biddingSuits, screen, myTurn, True, gameState["bidSuit"])
+
+    if mandatoryBidder and element.value == "Pass":
+        screen.blit(element.disabled, element.rect)
+        return
+
+    if element.value == "Bid":
+        if gameState["bidRank"] == UNDEFINED or gameState["bidSuit"] == TBD:
+            screen.blit(element.disabled, element.rect)
+            return
 
     if myTurn:
-        renderUiElements([ui.passBidding], screen, myTurn, True, None, mandatoryBidder)
-        renderUiElements([ui.makeBidding], screen, myTurn, True)
+        if element.rect.collidepoint(mousePos):
+            screen.blit(element.highlighted, element.rect)
+        else:
+            screen.blit(element.normal, element.rect)
+    else:
+        screen.blit(element.disabled, element.rect)
+
+
+def renderBidding(screen: pygame.Surface, ui: GameUI, gameState: dict):
+
+    renderBidSelect(ui.biddingNumbers, screen, gameState["bidRank"], gameState)
+    renderBidSelect(ui.biddingSuits, screen, gameState["bidSuit"], gameState)
+    renderBidAction(ui.passBidding, screen, gameState)
+    renderBidAction(ui.makeBidding, screen, gameState)
 
 
 def renderCards(decks: dict, screen: pygame.Surface, playingStage: bool):

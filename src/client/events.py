@@ -33,6 +33,16 @@ async def handleEvents(
                         )
                     )
 
+            if ui.makeBidding.rect.collidepoint(mousePos):
+                await websocket.send(
+                    json.dumps(
+                        {
+                            "Type": ReqType.BIDSKIP.value,
+                            "Data": {"bid": 7, "trump": "S"},
+                        }
+                    )
+                )
+
             for text in ui.biddingNumbers:
                 if text.rect.collidepoint(mousePos):
                     gameState["bidRank"] = text.value
