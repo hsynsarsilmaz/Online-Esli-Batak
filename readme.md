@@ -2,8 +2,8 @@
 
 **Eşli Batak** is a variation of the popular Turkish card game Batak. The game is played with 2 teams, each consisting of 2 players. The objective is to score the most points by winning tricks while avoiding falling short of your team's bid, which results in penalty points.
 
-## Complete Ruleset
-[Link will be added]
+## Complete Ruleset of Game
+![Screenshot 1](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/doc/ruleset.pdf)
 
 ## How to Run the Game
 
