@@ -30,5 +30,5 @@ python -m src.server.main
 python -m src.client.main 
 ```
 
-![Screenshot 1](res/img/misc/ss1.png.png)
-![Screenshot 2](res/img/misc/ss2.png.png)
+![Screenshot 1](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/main/res/img/misc/ss1.png)
+![Screenshot 2](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/main/res/img/misc/ss2.png)
