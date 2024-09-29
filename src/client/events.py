@@ -53,3 +53,22 @@ async def makeBid(websocket, bid, trump):
             }
         )
     )
+
+
+async def playCard(
+    decks: dict, websocket: websockets.WebSocketClientProtocol, mousePos: tuple
+):
+    for card in reversed(decks["my"].cards):
+        if card.playable and card.rect.collidepoint(mousePos):
+            await websocket.send(
+                json.dumps(
+                    {
+                        "Type": ReqType.PLAYCARD.value,
+                        "Data": {
+                            "suit": card.suit,
+                            "rank": card.rank,
+                        },
+                    }
+                )
+            )
+            break

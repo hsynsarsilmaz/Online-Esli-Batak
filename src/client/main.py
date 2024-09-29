@@ -59,7 +59,7 @@ async def main():
             renderPoints(ui, screen)
 
             if round.gameState["newRound"]:
-                round.startNewRound(ui)
+                round.loadNextRound(ui)
 
             pygame.display.flip()
             await asyncio.sleep(0)

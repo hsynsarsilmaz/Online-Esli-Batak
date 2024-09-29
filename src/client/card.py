@@ -40,22 +40,3 @@ class Card:
 
         self.xVel = (targetX - self.rect.center[0]) / 60
         self.yVel = (targetY - self.rect.center[1]) / 60
-
-
-def loadCardReverseImages():
-    relativePath = "res/img/cards/RV.png"
-    path = resourcePath(relativePath)
-
-    cardReverse = pygame.image.load(path if BUILD else relativePath).convert_alpha()
-    cardReverse = pygame.transform.scale(cardReverse, (CARD_WIDTH, CARD_HEIGHT))
-
-    return cardReverse, pygame.transform.rotate(cardReverse, 90)
-
-
-def loadCardImages(SuitsAndRanks, cards):
-    for suit, rank in SuitsAndRanks:
-        relativePath = f"res/img/cards/{rank}{suit}.png"
-        path = resourcePath(relativePath)
-        image = pygame.image.load(path if BUILD else relativePath).convert_alpha()
-        image = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
-        cards.append(Card(suit, rank, image))
