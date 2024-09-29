@@ -2,6 +2,7 @@ import websockets
 import json
 
 from src.common.common import *
+from src.server.game import Game
 
 
 async def broadcast(request: dict, connectedClients: list):
@@ -20,15 +21,10 @@ def printPlayers(connectedClients: list):
     print()
 
 
-async def connectClient(
-    websocket: websockets.WebSocketServerProtocol,
-    connectedClients: list,
-    cards: list,
-    starter: int,
-):
-    myId = len(connectedClients)
-    connectedClients.append(websocket)
-    printPlayers(connectedClients)
+async def connectClient(websocket: websockets.WebSocketServerProtocol, game: Game):
+    myId = len(game.connectedClients)
+    game.connectedClients.append(websocket)
+    printPlayers(game.connectedClients)
 
     await websocket.send(json.dumps({"Type": ReqType.CONNECT.value, "Data": myId}))
 
@@ -37,9 +33,9 @@ async def connectClient(
         await broadcast(
             {
                 "Type": ReqType.START.value,
-                "Data": {"cards": cards, "starterId": starter},
+                "Data": {"cards": game.cards, "starterId": game.bidding.starter},
             },
-            connectedClients,
+            game.connectedClients,
         )
 
     return myId

@@ -6,30 +6,23 @@ from src.common.common import *
 
 from src.server.networking import *
 from src.server.gamelogic import *
+from src.server.game import Game
 
-connectedClients = []
-turn = Turn()
-bidding = Bidding(0)
-cards = []
-points = [0, 0]
+games = []
 
 
 async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str):
-    myId = await connectClient(
-        websocket, connectedClients, cards, bidding.currentPlayer
-    )
+    myId = await connectClient(websocket, games[0])
 
     try:
         async for message in websocket:
             data = json.loads(message)
 
             if data["Type"] == ReqType.MAKEBID.value:
-                await processBid(myId, connectedClients, bidding, data, turn)
+                await processBid(myId, games[0], data)
 
             if data["Type"] == ReqType.PLAYCARD.value:
-                await playTurn(
-                    myId, connectedClients, turn, data, points, bidding, cards
-                )
+                await playTurn(myId, games[0], data)
 
     except websockets.ConnectionClosed:
         print("Client disconnected")
@@ -38,17 +31,18 @@ async def handleClient(websocket: websockets.WebSocketServerProtocol, path: str)
         print(f"An error occurred:\n{e}")
 
     finally:
-        connectedClients[myId] = None
+        games[0].connectedClients[myId] = None
 
 
 async def main():
-    dealCards(cards)
+    games.append(Game())
+    dealCards(games[0].cards)
     server = None
     try:
         server = await websockets.serve(handleClient, IP, PORT)
         print("Online Eşli Batak Server has started...")
         print(f"Server ip address: {IP}\nPort: {PORT}\n")
-        printPlayers(connectedClients)
+        printPlayers(games[0].connectedClients)
         await asyncio.Future()
     except Exception as e:
         print(f"An error occurred, closing server:\n{e}")
