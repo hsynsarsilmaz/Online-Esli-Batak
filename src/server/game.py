@@ -1,4 +1,8 @@
 from src.common.common import *
+from src.server.turn import Turn
+from src.server.bidding import Bidding
+from src.server.networking import *
+import random
 
 
 class Game:
@@ -10,73 +14,112 @@ class Game:
         self.points = [0, 0]
 
 
-class Turn:
-    def __init__(self):
-        self.reset()
+async def processBid(myId: int, game: Game, data: dict):
+    if data["Data"]["bid"] == UNDEFINED:
+        game.bidding.passBid(myId)
+    else:
+        game.bidding.makeBid(data["Data"]["bid"], data["Data"]["trump"], myId)
 
-    def play(self, suit: str, rank: int, player: int):
-        if self.winner == UNDEFINED:
-            self.winner = player
-            self.biggestRank = rank
-            self.originalSuit = suit
-            self.turnSuit = suit
+    if game.bidding.isBiddingEnded():
+        game.turn.trump = game.bidding.trump
+        request = ReqType.GAMESTART.value
+    else:
+        request = ReqType.BIDDING.value
+
+    await broadcast(
+        {
+            "Type": request,
+            "Data": {
+                "bid": game.bidding.bid,
+                "trump": game.bidding.trump,
+                "bidder": game.bidding.bidder,
+                "currentPlayer": (
+                    game.bidding.currentPlayer
+                    if request == ReqType.BIDDING.value
+                    else game.bidding.bidder
+                ),
+            },
+        },
+        game.connectedClients,
+    )
+
+
+async def playTurn(myId: int, game: Game, data: dict):
+    winner = UNDEFINED
+    champion = UNDEFINED
+    game.turn.play(data["Data"]["suit"], data["Data"]["rank"], myId)
+    if game.turn.playedCount == 4:
+        winner = game.turn.winner
+        if winner == 0 or winner == 2:
+            game.points[0] += 1
         else:
-            if suit == self.trump and self.turnSuit != self.trump:
-                self.winner = player
-                self.turnSuit = self.trump
-                self.isTrumpPlayed = True
-                self.biggestRank = rank
-            elif suit == self.turnSuit and rank > self.biggestRank:
-                self.winner = player
-                self.biggestRank = rank
+            game.points[1] += 1
+        game.turn.endTurn()
+        if game.turn.number == 13:
+            if game.bidding.bidder == 0 or game.bidding.bidder == 2:
+                if game.points[0] < game.bidding.bid:
+                    game.points[0] = -game.bidding.bid
+                if game.points[1] < 2:
+                    game.points[1] = -game.bidding.bid
+            else:
+                if game.points[0] < 2:
+                    game.points[0] = -game.bidding.bid
+                if game.points[1] < game.bidding.bid:
+                    game.points[1] = -game.bidding.bid
 
-        self.lastRank = rank
-        self.currentPlayer = (player + 1) % 4
-        self.playedCount += 1
+            starter = game.bidding.starter + 1 % 4
+            game.bidding.reset(starter)
+            dealCards(game.cards)
 
-    def endTurn(self):
-        self.playedCount = 0
-        self.number += 1
-        self.currentPlayer = self.winner
-        self.winner = UNDEFINED
+            await broadcast(
+                {
+                    "Type": ReqType.ENDROUND.value,
+                    "Data": {
+                        "suit": game.turn.turnSuit,
+                        "rank": game.turn.lastRank,
+                        "biggestRank": game.turn.biggestRank,
+                        "originalSuit": game.turn.originalSuit,
+                        "isTrumpPlayed": game.turn.isTrumpPlayed,
+                        "currentPlayer": game.turn.currentPlayer,
+                        "winner": winner,
+                        "champion": champion,
+                        "isFirstTurn": game.turn.playedCount == 0,
+                        "points": game.points,
+                        "cards": game.cards,
+                        "starterId": game.bidding.starter,
+                    },
+                },
+                game.connectedClients,
+            )
 
-    def reset(self):
-        self.number = 0
-        self.originalSuit = TBD
-        self.turnSuit = TBD
-        self.lastRank = 0
-        self.biggestRank = 0
-        self.trump = TBD
-        self.isTrumpPlayed = False
-        self.currentPlayer = 0
-        self.playedCount = 0
-        self.winner = UNDEFINED
+            game.turn.reset()
+
+            return
+
+    await broadcast(
+        {
+            "Type": ReqType.PLAYTURN.value,
+            "Data": {
+                "suit": game.turn.turnSuit,
+                "rank": game.turn.lastRank,
+                "biggestRank": game.turn.biggestRank,
+                "originalSuit": game.turn.originalSuit,
+                "isTrumpPlayed": game.turn.isTrumpPlayed,
+                "currentPlayer": game.turn.currentPlayer,
+                "winner": winner,
+                "champion": champion,
+                "isFirstTurn": game.turn.playedCount == 0,
+            },
+        },
+        game.connectedClients,
+    )
 
 
-class Bidding:
-
-    def __init__(self, starter: int):
-        self.reset(starter)
-
-    def makeBid(self, bid: int, trump: str, bidder: int):
-        self.bid = bid
-        self.trump = trump
-        self.bidder = bidder
-        self.currentPlayer = (bidder + 1) % 4
-
-    def passBid(self, player: int):
-        self.biddablePlayers[player] = False
-        self.currentPlayer = (self.currentPlayer + 1) % 4
-        while not self.biddablePlayers[self.currentPlayer]:
-            self.currentPlayer = (self.currentPlayer + 1) % 4
-
-    def isBiddingEnded(self):
-        return sum(self.biddablePlayers) == 1
-
-    def reset(self, starter: int):
-        self.starter = starter
-        self.currentPlayer = starter
-        self.bidder = UNDEFINED
-        self.bid = UNDEFINED
-        self.trump = TBD
-        self.biddablePlayers = [True, True, True, True]
+def dealCards(cards: list):
+    cards.clear()
+    suits = ["H", "S", "D", "C"]
+    ranks = [int(n) for n in range(2, 15)]
+    for suit in suits:
+        for rank in ranks:
+            cards.append((suit, rank))
+    random.shuffle(cards)

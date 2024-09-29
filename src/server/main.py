@@ -3,10 +3,8 @@ import websockets
 import sys
 import json
 from src.common.common import *
-
 from src.server.networking import *
-from src.server.gamelogic import *
-from src.server.game import Game
+from src.server.game import *
 
 games = []
 
