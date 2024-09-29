@@ -2,7 +2,6 @@ import websockets
 import json
 
 from src.client.ui import *
-from .deck import *
 from .round import *
 
 
@@ -21,7 +20,7 @@ async def handleServerConnection(
 
         elif data["Type"] == ReqType.START.value:
             loadCardImages(data["Data"]["cards"], cards)
-            dealCards(cards, round.decks, round.gameState["myId"])
+            round.dealCards(cards, round.gameState["myId"])
             round.gameState["stage"] = GameStage.BIDDING.value
             round.gameState["bid"] = UNDEFINED
             round.gameState["trump"] = TBD
@@ -80,7 +79,7 @@ async def handleServerConnection(
                 round.gameState["champion"] = data["Data"]["champion"]
                 ui.createWinner(round.gameState["champion"])
 
-            rePositionCards(round.decks)
+            round.rePositionCards()
 
         elif data["Type"] == ReqType.ENDROUND.value:
             round.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
@@ -115,7 +114,7 @@ async def handleServerConnection(
                 round.gameState["champion"] = data["Data"]["champion"]
                 ui.createWinner(round.gameState["champion"])
 
-            rePositionCards(round.decks)
+            round.rePositionCards()
 
             round.gameState["endRound"] = True
             round.gameState["newRoundData"] = data["Data"]
