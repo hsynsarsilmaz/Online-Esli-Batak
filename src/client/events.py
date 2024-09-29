@@ -14,50 +14,43 @@ async def handleEvents(
     ui: GameUI,
     websocket: websockets.WebSocketClientProtocol,
 ):
-
     if event.type == pygame.QUIT:
         return True
 
-    elif event.type == pygame.MOUSEBUTTONDOWN:
+    if event.type == pygame.MOUSEBUTTONDOWN:
         mousePos = pygame.mouse.get_pos()
 
         if gameState["currentPlayer"] == gameState["myId"]:
-            if ui.passBidding.rect.collidepoint(mousePos):
-                if gameState["bid"] != UNDEFINED:
-                    await websocket.send(
-                        json.dumps(
-                            {
-                                "Type": ReqType.MAKEBID.value,
-                                "Data": {"bid": UNDEFINED, "trump": TBD},
-                            }
-                        )
-                    )
-
-            if ui.makeBidding.rect.collidepoint(mousePos):
-                await websocket.send(
-                    json.dumps(
-                        {
-                            "Type": ReqType.MAKEBID.value,
-                            "Data": {
-                                "bid": gameState["bidRank"],
-                                "trump": gameState["bidSuit"][0],
-                            },
-                        }
-                    )
-                )
-
-            for text in ui.biddingNumbers:
-                if (
-                    text.rect.collidepoint(mousePos)
-                    and int(text.value) > gameState["bid"]
-                ):
-                    gameState["bidRank"] = int(text.value)
-
-            for image in ui.biddingSuits:
-                if image.rect.collidepoint(mousePos):
-                    gameState["bidSuit"] = image.value
+            await handleBidding(ui, mousePos, gameState, websocket)
 
         if gameState["stage"] == GameStage.PLAYING.value:
             await playCard(decks, websocket, mousePos)
 
     return False
+
+
+async def handleBidding(ui, mousePos, gameState, websocket):
+    if ui.passBidding.rect.collidepoint(mousePos) and gameState["bid"] != UNDEFINED:
+        await makeBid(websocket, UNDEFINED, TBD)
+
+    if ui.makeBidding.rect.collidepoint(mousePos):
+        await makeBid(websocket, gameState["bidRank"], gameState["bidSuit"][0])
+
+    for text in ui.biddingNumbers:
+        if text.rect.collidepoint(mousePos) and int(text.value) > gameState["bid"]:
+            gameState["bidRank"] = int(text.value)
+
+    for image in ui.biddingSuits:
+        if image.rect.collidepoint(mousePos):
+            gameState["bidSuit"] = image.value
+
+
+async def makeBid(websocket, bid, trump):
+    await websocket.send(
+        json.dumps(
+            {
+                "Type": ReqType.MAKEBID.value,
+                "Data": {"bid": bid, "trump": trump},
+            }
+        )
+    )
