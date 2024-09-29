@@ -30,4 +30,5 @@ async def handleServerConnection(
             round.playTurn(data, ui, cardPlayAnimations)
 
         elif data["Type"] == ReqType.ENDROUND.value:
-            round.endRound(data, ui, cardPlayAnimations)
+            round.playTurn(data, ui, cardPlayAnimations)
+            round.endRound(data)

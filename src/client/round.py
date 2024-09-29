@@ -196,40 +196,6 @@ class Round:
 
         self.rePositionCards()
 
-    def endRound(self, data: dict, ui: GameUI, cardPlayAnimations: list):
-        self.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
-        if self.gameState["currentPlayer"] != round.gameState["myId"]:
-            self.decks["my"].unMarkMyCards()
-        else:
-            self.decks["my"].markPlayableCards(
-                data["Data"]["isFirstTurn"],
-                data["Data"]["suit"],
-                data["Data"]["biggestRank"],
-                self.gameState["trump"],
-                data["Data"]["isTrumpPlayed"],
-                data["Data"]["originalSuit"],
-            )
-        card = None
-        for key, deck in self.decks.items():
-            card = deck.findCard(data["Data"]["suit"], data["Data"]["rank"])
-            if card:
-                deck.cards.remove(card)
-                break
-        card.xVel = (WIDTH // 2 - card.rect.center[0]) / 60
-        card.yVel = (HEIGHT // 2 - card.rect.center[1]) / 60
-        card.frame = 0
-        card.rect = card.image.get_rect(center=card.rect.center)
-
-        cardPlayAnimations.append(card)
-
-        self.gameState["winner"] = data["Data"]["winner"]
-        self.gameState["champion"] = data["Data"]["champion"]
-
-        if self.gameState["champion"] != UNDEFINED:
-            self.gameState["champion"] = data["Data"]["champion"]
-            ui.createWinner(self.gameState["champion"])
-
-        self.rePositionCards()
-
+    def endRound(self, data: dict):
         self.gameState["endRound"] = True
         self.gameState["newRoundData"] = data["Data"]
