@@ -5,6 +5,13 @@ from src.common.common import BUILD, resourcePath
 CARD_WIDTH, CARD_HEIGHT = 125, 182
 WIDTH, HEIGHT = 1600, 900
 
+WINNER_TARGET_POSITIONS = [
+    (WIDTH // 2, HEIGHT + 200),  # Self
+    (WIDTH + 200, HEIGHT // 2),  # Right Player
+    (WIDTH // 2, -200),  # Mate
+    (-200, HEIGHT // 2),  # Left Player
+]
+
 
 class Card:
 
@@ -29,19 +36,7 @@ class Card:
         return grayImage
 
     def calculateWinnerVelocities(self, winner: int, myId: int):
-        targetX, targetY = 0, 0
-        if winner == myId:
-            targetX = WIDTH // 2
-            targetY = HEIGHT + 200
-        elif winner == (myId + 1) % 4:
-            targetX = WIDTH + 200
-            targetY = HEIGHT // 2
-        elif winner == (myId + 2) % 4:
-            targetX = WIDTH // 2
-            targetY = -200
-        elif winner == (myId + 3) % 4:
-            targetX = -200
-            targetY = HEIGHT // 2
+        targetX, targetY = WINNER_TARGET_POSITIONS[(winner - myId) % 4]
 
         self.xVel = (targetX - self.rect.center[0]) / 60
         self.yVel = (targetY - self.rect.center[1]) / 60
@@ -50,21 +45,11 @@ class Card:
 def loadCardReverseImages():
     relativePath = "res/img/cards/RV.png"
     path = resourcePath(relativePath)
-    cardReverseVertical = pygame.image.load(
-        path if BUILD else relativePath
-    ).convert_alpha()
-    cardReverseVertical = pygame.transform.scale(
-        cardReverseVertical, (CARD_WIDTH, CARD_HEIGHT)
-    )
-    cardReverseHorizontal = pygame.image.load(
-        path if BUILD else relativePath
-    ).convert_alpha()
-    cardReverseHorizontal = pygame.transform.scale(
-        cardReverseHorizontal, (CARD_WIDTH, CARD_HEIGHT)
-    )
-    cardReverseHorizontal = pygame.transform.rotate(cardReverseHorizontal, 90)
 
-    return cardReverseVertical, cardReverseHorizontal
+    cardReverse = pygame.image.load(path if BUILD else relativePath).convert_alpha()
+    cardReverse = pygame.transform.scale(cardReverse, (CARD_WIDTH, CARD_HEIGHT))
+
+    return cardReverse, pygame.transform.rotate(cardReverse, 90)
 
 
 def loadCardImages(SuitsAndRanks, cards):
