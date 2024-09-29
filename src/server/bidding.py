@@ -1,5 +1,4 @@
 from src.common.common import *
-from src.server.networking import *
 
 
 class Bidding:
