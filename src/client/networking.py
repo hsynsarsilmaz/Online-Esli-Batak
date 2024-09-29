@@ -2,7 +2,7 @@ import websockets
 import json
 
 from src.client.ui import *
-from src.client.gamelogic import *
+from .deck import *
 
 
 async def handleServerConnection(

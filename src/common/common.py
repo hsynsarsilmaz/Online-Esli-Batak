@@ -12,6 +12,7 @@ IP = "localhost"
 PORT = 7777
 URI = f"ws://{IP}:{PORT}"
 BUILD = False
+TBD = ""
 
 class ReqType(enum.Enum):
     CONNECT = 0
@@ -23,6 +24,13 @@ class ReqType(enum.Enum):
     PLAYCARD = 6
     PLAYTURN = 7
     ENDROUND = 8
+
+
+class GameStage(enum.Enum):
+    WAITING = 0
+    BIDDING = 1
+    PLAYING = 2
+    END = 3
 
 
 def resourcePath(relativePath):
