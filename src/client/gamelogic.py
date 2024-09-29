@@ -72,7 +72,7 @@ class Deck:
                 return card
         return None
 
-    def checkPlayable(self, playableCards: list) -> bool:
+    def validatePlayableCards(self, playableCards: list) -> bool:
         if len(playableCards) > 0:
             for playableCard in playableCards:
                 playableCard.playable = True
@@ -114,7 +114,7 @@ class Deck:
                 if card.suit == originalSuit:
                     playableCards.append(card)
 
-        if self.checkPlayable(playableCards):
+        if self.validatePlayableCards(playableCards):
             return True
 
         # If the player has a card that greater than biggest played card, they must play it
@@ -122,7 +122,7 @@ class Deck:
             if card.suit == suit and card.rank > biggestRank:
                 playableCards.append(card)
 
-        if self.checkPlayable(playableCards):
+        if self.validatePlayableCards(playableCards):
             return True
 
         # If the player doesn't have a card that greater than biggest played card, they can play any card of the same suit
@@ -130,7 +130,7 @@ class Deck:
             if card.suit == suit:
                 playableCards.append(card)
 
-        if self.checkPlayable(playableCards):
+        if self.validatePlayableCards(playableCards):
             return True
 
         return False
@@ -142,7 +142,7 @@ class Deck:
             if card.suit == trump:
                 playableCards.append(card)
 
-        if self.checkPlayable(playableCards):
+        if self.validatePlayableCards(playableCards):
             return True
 
     def markPlayableCards(
@@ -188,20 +188,20 @@ def dealCards(cards: list, decks: dict, myId: int):
 
     for i in range(4):
         for j in range(13):
-            c = cards[j + i * 13]
+            card = cards[j + i * 13]
             if i == myId:
-                c.reverse = cardReverseVertical
-                c.visible = True
-                decks["my"].cards.append(c)
+                card.reverse = cardReverseVertical
+                card.visible = True
+                decks["my"].cards.append(card)
             elif i == (myId + 1) % 4:
-                c.reverse = cardReverseHorizontal
-                decks["left"].cards.append(c)
+                card.reverse = cardReverseHorizontal
+                decks["left"].cards.append(card)
             elif i == (myId + 2) % 4:
-                c.reverse = cardReverseVertical
-                decks["mate"].cards.append(c)
+                card.reverse = cardReverseVertical
+                decks["mate"].cards.append(card)
             elif i == (myId + 3) % 4:
-                c.reverse = cardReverseHorizontal
-                decks["right"].cards.append(c)
+                card.reverse = cardReverseHorizontal
+                decks["right"].cards.append(card)
 
     for deck in decks.values():
         deck.sortDeck()
