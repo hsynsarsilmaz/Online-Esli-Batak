@@ -1,7 +1,6 @@
 import pygame
 
 from src.client.ui import *
-from src.client.gamelogic import *
 
 
 def renderBidSelect(elements: list, screen: pygame.Surface, selected, gameState: dict):

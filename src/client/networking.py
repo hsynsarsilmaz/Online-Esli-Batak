@@ -3,12 +3,12 @@ import json
 
 from src.client.ui import *
 from .deck import *
+from .round import *
 
 
 async def handleServerConnection(
     websocket: websockets.WebSocketClientProtocol,
-    decks: dict,
-    gameState: dict,
+    round: Round,
     ui: GameUI,
     cardPlayAnimations: list,
 ):
@@ -17,51 +17,51 @@ async def handleServerConnection(
         cards = []
 
         if data["Type"] == ReqType.CONNECT.value:
-            gameState["myId"] = data["Data"]
+            round.gameState["myId"] = data["Data"]
 
         elif data["Type"] == ReqType.START.value:
             loadCardImages(data["Data"]["cards"], cards)
-            dealCards(cards, decks, gameState["myId"])
-            gameState["stage"] = GameStage.BIDDING.value
-            gameState["bid"] = UNDEFINED
-            gameState["trump"] = TBD
-            gameState["bidder"] = UNDEFINED
-            gameState["currentPlayer"] = data["Data"]["starterId"]
+            dealCards(cards, round.decks, round.gameState["myId"])
+            round.gameState["stage"] = GameStage.BIDDING.value
+            round.gameState["bid"] = UNDEFINED
+            round.gameState["trump"] = TBD
+            round.gameState["bidder"] = UNDEFINED
+            round.gameState["currentPlayer"] = data["Data"]["starterId"]
 
         elif data["Type"] == ReqType.BIDDING.value:
-            gameState["bid"] = data["Data"]["bid"]
-            gameState["trump"] = data["Data"]["trump"]
-            gameState["bidder"] = data["Data"]["bidder"]
-            gameState["bidRank"] = UNDEFINED
-            gameState["bidSuit"] = TBD
-            gameState["currentPlayer"] = data["Data"]["currentPlayer"]
+            round.gameState["bid"] = data["Data"]["bid"]
+            round.gameState["trump"] = data["Data"]["trump"]
+            round.gameState["bidder"] = data["Data"]["bidder"]
+            round.gameState["bidRank"] = UNDEFINED
+            round.gameState["bidSuit"] = TBD
+            round.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
 
         elif data["Type"] == ReqType.GAMESTART.value:
-            gameState["bid"] = data["Data"]["bid"]
-            gameState["trump"] = data["Data"]["trump"]
-            gameState["bidder"] = data["Data"]["bidder"]
-            gameState["stage"] = GameStage.PLAYING.value
-            gameState["currentPlayer"] = data["Data"]["currentPlayer"]
-            if gameState["myId"] == gameState["currentPlayer"]:
-                decks["my"].markPlayableCards(
-                    True, "", 0, gameState["trump"], False, ""
+            round.gameState["bid"] = data["Data"]["bid"]
+            round.gameState["trump"] = data["Data"]["trump"]
+            round.gameState["bidder"] = data["Data"]["bidder"]
+            round.gameState["stage"] = GameStage.PLAYING.value
+            round.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
+            if round.gameState["myId"] == round.gameState["currentPlayer"]:
+                round.decks["my"].markPlayableCards(
+                    True, "", 0, round.gameState["trump"], False, ""
                 )
 
         elif data["Type"] == ReqType.PLAYTURN.value:
-            gameState["currentPlayer"] = data["Data"]["currentPlayer"]
-            if gameState["currentPlayer"] != gameState["myId"]:
-                decks["my"].unMarkMyCards()
+            round.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
+            if round.gameState["currentPlayer"] != round.gameState["myId"]:
+                round.decks["my"].unMarkMyCards()
             else:
-                decks["my"].markPlayableCards(
+                round.decks["my"].markPlayableCards(
                     data["Data"]["isFirstTurn"],
                     data["Data"]["suit"],
                     data["Data"]["biggestRank"],
-                    gameState["trump"],
+                    round.gameState["trump"],
                     data["Data"]["isTrumpPlayed"],
                     data["Data"]["originalSuit"],
                 )
             card = None
-            for key, deck in decks.items():
+            for key, deck in round.decks.items():
                 card = deck.findCard(data["Data"]["suit"], data["Data"]["rank"])
                 if card:
                     deck.cards.remove(card)
@@ -73,30 +73,30 @@ async def handleServerConnection(
 
             cardPlayAnimations.append(card)
 
-            gameState["winner"] = data["Data"]["winner"]
-            gameState["champion"] = data["Data"]["champion"]
+            round.gameState["winner"] = data["Data"]["winner"]
+            round.gameState["champion"] = data["Data"]["champion"]
 
-            if gameState["champion"] != UNDEFINED:
-                gameState["champion"] = data["Data"]["champion"]
-                ui.createWinner(gameState["champion"])
+            if round.gameState["champion"] != UNDEFINED:
+                round.gameState["champion"] = data["Data"]["champion"]
+                ui.createWinner(round.gameState["champion"])
 
-            rePositionCards(decks)
+            rePositionCards(round.decks)
 
         elif data["Type"] == ReqType.ENDROUND.value:
-            gameState["currentPlayer"] = data["Data"]["currentPlayer"]
-            if gameState["currentPlayer"] != gameState["myId"]:
-                decks["my"].unMarkMyCards()
+            round.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
+            if round.gameState["currentPlayer"] != round.gameState["myId"]:
+                round.decks["my"].unMarkMyCards()
             else:
-                decks["my"].markPlayableCards(
+                round.decks["my"].markPlayableCards(
                     data["Data"]["isFirstTurn"],
                     data["Data"]["suit"],
                     data["Data"]["biggestRank"],
-                    gameState["trump"],
+                    round.gameState["trump"],
                     data["Data"]["isTrumpPlayed"],
                     data["Data"]["originalSuit"],
                 )
             card = None
-            for key, deck in decks.items():
+            for key, deck in round.decks.items():
                 card = deck.findCard(data["Data"]["suit"], data["Data"]["rank"])
                 if card:
                     deck.cards.remove(card)
@@ -108,17 +108,17 @@ async def handleServerConnection(
 
             cardPlayAnimations.append(card)
 
-            gameState["winner"] = data["Data"]["winner"]
-            gameState["champion"] = data["Data"]["champion"]
+            round.gameState["winner"] = data["Data"]["winner"]
+            round.gameState["champion"] = data["Data"]["champion"]
 
-            if gameState["champion"] != UNDEFINED:
-                gameState["champion"] = data["Data"]["champion"]
-                ui.createWinner(gameState["champion"])
+            if round.gameState["champion"] != UNDEFINED:
+                round.gameState["champion"] = data["Data"]["champion"]
+                ui.createWinner(round.gameState["champion"])
 
-            rePositionCards(decks)
+            rePositionCards(round.decks)
 
-            gameState["endRound"] = True
-            gameState["newRoundData"] = data["Data"]
+            round.gameState["endRound"] = True
+            round.gameState["newRoundData"] = data["Data"]
 
 
 async def playCard(

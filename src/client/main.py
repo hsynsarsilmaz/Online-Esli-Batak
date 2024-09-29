@@ -6,9 +6,9 @@ from src.common.common import *
 from src.client.networking import *
 from src.client.rendering import *
 from src.client.events import *
-from src.client.gamelogic import *
 from src.client.card import *
 from src.client.ui import *
+from src.client.round import *
 
 
 async def main():
@@ -18,8 +18,7 @@ async def main():
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
-    gameState = getDefaultGameState()
-    decks = {}
+    round = Round()
     cardPlayAnimations = []
     cardDestoryAnimations = []
     ui = GameUI()
@@ -28,35 +27,39 @@ async def main():
     async with websockets.connect(URI) as websocket:
 
         message_handler = asyncio.create_task(
-            handleServerConnection(websocket, decks, gameState, ui, cardPlayAnimations)
+            handleServerConnection(websocket, round, ui, cardPlayAnimations)
         )
 
         while running:
             for event in pygame.event.get():
-                if await handleEvents(event, gameState, decks, ui, websocket):
+                if await handleEvents(
+                    event, round.gameState, round.decks, ui, websocket
+                ):
                     running = False
 
             screen.fill(BGCOLOR)
             clock.tick(FPS)
 
-            if gameState["stage"] == GameStage.WAITING.value:
+            if round.gameState["stage"] == GameStage.WAITING.value:
                 screen.blit(ui.waitingForPlayers.normal, ui.waitingForPlayers.rect)
 
-            elif gameState["stage"] == GameStage.BIDDING.value:
-                renderBidding(screen, ui, gameState)
-                renderCards(decks, screen, False)
+            elif round.gameState["stage"] == GameStage.BIDDING.value:
+                renderBidding(screen, ui, round.gameState)
+                renderCards(round.decks, screen, False)
 
-            elif gameState["stage"] == GameStage.PLAYING.value:
-                renderCards(decks, screen, True)
+            elif round.gameState["stage"] == GameStage.PLAYING.value:
+                renderCards(round.decks, screen, True)
                 renderCardPlayAnimations(
-                    cardPlayAnimations, cardDestoryAnimations, screen, gameState
+                    cardPlayAnimations, cardDestoryAnimations, screen, round.gameState
                 )
-                renderCardDestroyAnimations(cardDestoryAnimations, screen, gameState)
+                renderCardDestroyAnimations(
+                    cardDestoryAnimations, screen, round.gameState
+                )
 
             renderPoints(ui, screen)
 
-            if gameState["newRound"]:
-                startNewRound(gameState, decks, ui)
+            if round.gameState["newRound"]:
+                round.startNewRound(ui)
 
             pygame.display.flip()
             await asyncio.sleep(0)
