@@ -1,34 +1,36 @@
-# Eşli Batak
 
-**Eşli Batak** is a variation of the popular Turkish card game Batak. The game is played with 2 teams, each consisting of 2 players. The objective is to score the most points by winning tricks while avoiding falling short of your team's bid, which results in penalty points.
+# 🎴 Eşli Batak
 
-## Complete Ruleset of Game
-[Ruleset](https://github.com/hsynsarsilmaz/Online-Esli-Batak/blob/main/doc/Ruleset.pdf)
+**Eşli Batak** is an exciting variation of the popular Turkish card game **Batak**. Played with two teams of two players each, the goal is to score the most points by winning tricks while avoiding falling short of your team's bid, which can lead to penalty points.
 
-## How to Run the Game
+## 📝 Complete Ruleset
+For a detailed overview of the game's rules, check out the [Complete Ruleset](https://github.com/hsynsarsilmaz/Online-Esli-Batak/blob/main/doc/Ruleset.pdf).
 
-The game operates on a LAN, and 4 players are needed to start.
+## 🚀 How to Run the Game
 
-1. **Start the server:**
-   - [Link to server executable will be added]
+The game operates on a Local Area Network (LAN) and requires **4 players** to start. Follow these steps to get started:
 
-2. **Run the game executable and connect to the server using its IP address:**
-   - [Link to client executable will be added]
+1. **Start the Server**: The server will run on port **7777** on localhost.
+2. **Start the Clients**: Once the server is running, you can start the clients. The clients will automatically connect to the server and wait for other players. The game begins when **4 clients** are connected.
 
-## How to Find the Server IP
+### 🔗 Download Link
+- [Latest Release](https://github.com/hsynsarsilmaz/Online-Esli-Batak/releases/tag/v1.0)
 
-- **On Windows:** Use the `ipconfig` command.
-- **On Linux:** Use the `ifconfig` command.
+## 🐍 Running the Game with Python
 
-## Running the Game with Python
-
-To run the game directly with Python, ensure you have the `websockets` and `pygame` modules installed:
+To run the game directly using Python, make sure you have the `websockets` and `pygame` modules installed. You can do this by running:
 
 ```bash
 pip install pygame websockets
+```
+
+Then, you can start the server and clients with the following commands:
+
+```bash
 python -m src.server.main
 python -m src.client.main 
 ```
 
+## 📸 Screenshots
 ![Screenshot 1](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/main/res/img/misc/ss1.png)
 ![Screenshot 2](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/main/res/img/misc/ss2.png)
