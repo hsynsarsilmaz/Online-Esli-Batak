@@ -11,6 +11,7 @@ class Game:
     def __init__(self):
         self.connectedClients = []
         self.turn = Turn()
+        self.turn.number = 11
         self.bidding = Bidding(0)
         self.cards = []
         self.points = [0, 0]
@@ -45,6 +46,8 @@ class Game:
         )
 
     async def playTurn(self, myId: int, data: dict):
+        if data["Data"]["playedForMate"] == True:
+            myId = (myId + 2) % 4
         winner = UNDEFINED
         champion = UNDEFINED
         self.turn.play(data["Data"]["suit"], data["Data"]["rank"], myId)

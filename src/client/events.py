@@ -58,8 +58,12 @@ async def makeBid(websocket, bid, trump):
 async def playCard(
     decks: dict, websocket: websockets.WebSocketClientProtocol, mousePos: tuple
 ):
-    for card in reversed(decks["my"].cards):
-        if card.playable and card.rect.collidepoint(mousePos):
+    playableCards = [
+        (card, False) for card in reversed(decks["my"].cards) if card.playable
+    ] + [(card, True) for card in reversed(decks["mate"].cards) if card.playable]
+
+    for card, playedForMate in playableCards:
+        if card.rect.collidepoint(mousePos):
             await websocket.send(
                 json.dumps(
                     {
@@ -67,6 +71,7 @@ async def playCard(
                         "Data": {
                             "suit": card.suit,
                             "rank": card.rank,
+                            "playedForMate": playedForMate,
                         },
                     }
                 )

@@ -153,19 +153,17 @@ class Round:
     def makeMateVisible(self):
         if self.gameState["myId"] == self.gameState["currentPlayer"]:
             for card in self.decks["mate"].cards:
-                    card.visible = True
-        
+                card.visible = True
+
         if self.gameState["myId"] == (self.gameState["currentPlayer"] + 1) % 4:
             for card in self.decks["left"].cards:
-                    card.visible = True
-                    card.grayImage = pygame.transform.rotate(card.grayImage, 270)
+                card.visible = True
+                card.grayImage = pygame.transform.rotate(card.grayImage, 270)
 
         if self.gameState["myId"] == (self.gameState["currentPlayer"] + 3) % 4:
             for card in self.decks["right"].cards:
-                    card.visible = True
-                    card.grayImage = pygame.transform.rotate(card.grayImage, 270)
-        
-            
+                card.visible = True
+                card.grayImage = pygame.transform.rotate(card.grayImage, 270)
 
     def startPlayingStage(self, data: dict):
         self.gameState["bid"] = data["Data"]["bid"]
@@ -183,9 +181,23 @@ class Round:
 
     def playTurn(self, data: dict, ui: GameUI, cardPlayAnimations: list):
         self.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
-        if self.gameState["currentPlayer"] != self.gameState["myId"]:
-            self.decks["my"].unMarkMyCards()
-        else:
+        for deck in self.decks.values():
+            deck.unmarkPlayableCards()
+        if (
+            self.gameState["bidder"] == self.gameState["myId"]
+            and self.gameState["currentPlayer"] == (self.gameState["myId"] + 2) % 4
+        ):
+            self.decks["mate"].markPlayableCards(
+                data["Data"]["isFirstTurn"],
+                data["Data"]["suit"],
+                data["Data"]["biggestRank"],
+                self.gameState["trump"],
+                data["Data"]["isTrumpPlayed"],
+                data["Data"]["originalSuit"],
+            )
+        elif self.gameState["bidder"] == (self.gameState["myId"] + 2) % 4:
+            pass
+        elif self.gameState["currentPlayer"] == self.gameState["myId"]:
             self.decks["my"].markPlayableCards(
                 data["Data"]["isFirstTurn"],
                 data["Data"]["suit"],
@@ -194,6 +206,7 @@ class Round:
                 data["Data"]["isTrumpPlayed"],
                 data["Data"]["originalSuit"],
             )
+
         card = None
         for key, deck in self.decks.items():
             card = deck.findCard(data["Data"]["suit"], data["Data"]["rank"])

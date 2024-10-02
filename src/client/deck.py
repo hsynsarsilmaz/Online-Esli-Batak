@@ -166,6 +166,6 @@ class Deck:
         for card in self.cards:
             card.playable = True
 
-    def unMarkMyCards(self):
+    def unmarkPlayableCards(self):
         for card in self.cards:
             card.playable = False

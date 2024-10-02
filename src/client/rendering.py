@@ -67,7 +67,7 @@ def renderBidding(screen: pygame.Surface, ui: GameUI, gameState: dict):
 def renderCards(decks: dict, screen: pygame.Surface, playingStage: bool):
     selectedCard = None
     if playingStage:
-        for card in reversed(decks["my"].cards):
+        for card in reversed(decks["my"].cards + decks["mate"].cards):
             if card.rect.collidepoint(pygame.mouse.get_pos()):
                 selectedCard = card
                 break
