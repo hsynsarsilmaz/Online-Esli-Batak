@@ -33,4 +33,4 @@ python -m src.client.main
 
 ## 📸 Screenshots
 ![Screenshot 1](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/main/res/img/misc/ss1.png)
-![Screenshot 2](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/main/res/img/misc/ss2.png)
+![Screenshot 2](https://raw.githubusercontent.com/hsynsarsilmaz/Online-Esli-Batak/refs/heads/main/res/img/misc/ss2.png)
