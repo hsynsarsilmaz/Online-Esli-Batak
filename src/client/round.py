@@ -150,12 +150,32 @@ class Round:
         self.gameState["bidSuit"] = TBD
         self.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
 
+    def makeMateVisible(self):
+        if self.gameState["myId"] == self.gameState["currentPlayer"]:
+            for card in self.decks["mate"].cards:
+                    card.visible = True
+        
+        if self.gameState["myId"] == (self.gameState["currentPlayer"] + 1) % 4:
+            for card in self.decks["left"].cards:
+                    card.visible = True
+                    card.grayImage = pygame.transform.rotate(card.grayImage, 270)
+
+        if self.gameState["myId"] == (self.gameState["currentPlayer"] + 3) % 4:
+            for card in self.decks["right"].cards:
+                    card.visible = True
+                    card.grayImage = pygame.transform.rotate(card.grayImage, 270)
+        
+            
+
     def startPlayingStage(self, data: dict):
         self.gameState["bid"] = data["Data"]["bid"]
         self.gameState["trump"] = data["Data"]["trump"]
         self.gameState["bidder"] = data["Data"]["bidder"]
         self.gameState["stage"] = GameStage.PLAYING.value
         self.gameState["currentPlayer"] = data["Data"]["currentPlayer"]
+
+        self.makeMateVisible()
+
         if self.gameState["myId"] == self.gameState["currentPlayer"]:
             self.decks["my"].markPlayableCards(
                 True, "", 0, self.gameState["trump"], False, ""
