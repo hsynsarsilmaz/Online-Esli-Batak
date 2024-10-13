@@ -11,7 +11,6 @@ class Game:
     def __init__(self):
         self.connectedClients = []
         self.turn = Turn()
-        self.turn.number = 11
         self.bidding = Bidding(0)
         self.cards = []
         self.points = [0, 0]

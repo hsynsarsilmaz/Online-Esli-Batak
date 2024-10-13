@@ -1,6 +1,7 @@
 import enum
 import sys
 import os
+import logging
 
 # Constants
 WIDTH, HEIGHT = 1600, 900
@@ -12,7 +13,20 @@ IP = "localhost"
 PORT = 7777
 URI = f"ws://{IP}:{PORT}"
 BUILD = False
+Debug = True
 TBD = ""
+
+if Debug:
+    logging.basicConfig(
+        filename="gamelog.log",
+        level=logging.DEBUG,
+        format="%(message)s",
+    )
+
+    # Set the logging level for all other modules to WARNING
+    logging.getLogger().setLevel(logging.WARNING)
+    logger = logging.getLogger("Logger")
+    logger.setLevel(logging.DEBUG)
 
 class ReqType(enum.Enum):
     CONNECT = 0
