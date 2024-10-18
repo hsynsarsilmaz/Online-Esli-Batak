@@ -209,7 +209,13 @@ class Round:
 
         card = None
         for key, deck in self.decks.items():
-            card = deck.findCard(data["Data"]["suit"], data["Data"]["rank"])
+            suit = (
+                data["Data"]["ineffective"]
+                if data["Data"]["ineffective"]
+                else data["Data"]["suit"]
+            )
+
+            card = deck.findCard(suit, data["Data"]["rank"])
             if card:
                 deck.cards.remove(card)
                 break

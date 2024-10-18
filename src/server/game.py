@@ -89,6 +89,7 @@ class Game:
                             "points": self.points,
                             "cards": self.cards,
                             "starterId": self.bidding.starter,
+                            "ineffective": self.turn.ineffective,
                         },
                     }
                 )
@@ -110,6 +111,7 @@ class Game:
                     "winner": winner,
                     "champion": champion,
                     "isFirstTurn": self.turn.playedCount == 0,
+                    "ineffective": self.turn.ineffective,
                 },
             }
         )

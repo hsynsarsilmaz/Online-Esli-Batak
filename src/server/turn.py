@@ -6,6 +6,7 @@ class Turn:
         self.reset()
 
     def play(self, suit: str, rank: int, player: int):
+        self.ineffective = TBD
         if self.winner == UNDEFINED:
             self.winner = player
             self.biggestRank = rank
@@ -20,6 +21,8 @@ class Turn:
             elif suit == self.turnSuit and rank > self.biggestRank:
                 self.winner = player
                 self.biggestRank = rank
+            else:
+                self.ineffective = suit
 
         self.lastRank = rank
         self.currentPlayer = (player + 1) % 4
@@ -42,3 +45,4 @@ class Turn:
         self.currentPlayer = 0
         self.playedCount = 0
         self.winner = UNDEFINED
+        self.ineffective = TBD
