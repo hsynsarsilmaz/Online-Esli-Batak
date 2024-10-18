@@ -1,6 +1,7 @@
 import pygame
 import asyncio
 import websockets
+import re
 
 from src.common.common import *
 from src.client.networking import *
@@ -9,6 +10,32 @@ from src.client.events import *
 from src.client.card import *
 from src.client.ui import *
 from src.client.round import *
+
+
+def readIpFromFile(path):
+    try:
+        with open(path, "r") as file:
+            ip_address = file.readline().strip()
+            if isValidIp(ip_address):
+                return ip_address
+            else:
+                print("Invalid IP address in file.")
+                return None
+    except FileNotFoundError:
+        print(f"File not found: {path}")
+        return None
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        return None
+
+
+def isValidIp(ip_address):
+    pattern = re.compile(r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
+    if pattern.match(ip_address):
+        parts = ip_address.split(".")
+        if all(0 <= int(part) <= 255 for part in parts):
+            return True
+    return False
 
 
 async def main():
@@ -23,6 +50,11 @@ async def main():
     cardDestoryAnimations = []
     ui = GameUI()
     running = True
+    IP = readIpFromFile("ip.txt")
+    if not IP:
+        print("No valid IP address found. Exiting...")
+        return
+    URI = f"ws://{IP}:{PORT}"
 
     async with websockets.connect(URI) as websocket:
 

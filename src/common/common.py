@@ -10,7 +10,6 @@ UNDEFINED = -1
 
 IP = "localhost"
 PORT = 7777
-URI = f"ws://{IP}:{PORT}"
 BUILD = False
 TBD = ""
 
